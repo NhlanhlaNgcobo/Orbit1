@@ -1,0 +1,1730 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OrbitOS Workspace Guide</title>
+<meta name="description" content="Guided, animated tours of every part of the OrbitOS workspace.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  (function(){var t;try{t=localStorage.getItem('orbit-guide-theme')}catch(e){}
+  if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}
+  document.documentElement.setAttribute('data-theme',t)})();
+</script>
+<style>
+/* ---------- Tokens: lifted from the OrbitOS app stylesheet ---------- */
+:root,:root[data-theme=dark],.win[data-wtheme=dark]{
+  color-scheme:dark;
+  --base:5 5 5;--sunken:8 8 8;--card:11 11 11;--raised:14 14 14;--control:20 20 20;--hover:30 30 30;--active:38 38 38;--highest:52 52 54;
+  --ink-strong:255 255 255;--ink:237 237 237;--muted:161 161 161;--dim:126 126 126;--faint:110 110 110;--on-ink:5 5 5;--line:255 255 255;
+  --amber:245 166 35;--red:229 106 106;--green:35 197 106;--blue:96 165 250;--violet:160 120 255;--teal:0 212 170;--gold:255 184 0;--pink:255 120 224;
+  --planet:7 7 7;--limb:255 255 255;--haze:96 165 250;
+  --shadow-card:inset 0 1px 0 rgb(255 255 255/.03),0 1px 2px rgb(0 0 0/.4);
+  --shadow-raised:inset 0 1px 0 rgb(255 255 255/.06),0 2px 8px rgb(0 0 0/.5);
+  --shadow-overlay:0 40px 100px rgb(0 0 0/.6);
+  --scrim:0 0 0;--scrim-a:.5;--fog-a:.72;
+}
+:root[data-theme=light],.win[data-wtheme=light]{
+  color-scheme:light;
+  --base:250 249 247;--sunken:242 240 234;--card:255 255 255;--raised:255 255 255;--control:241 239 233;--hover:231 228 220;--active:219 215 205;--highest:205 200 189;
+  --ink-strong:0 0 0;--ink:22 24 29;--muted:88 93 104;--dim:107 112 121;--faint:139 144 153;--on-ink:250 249 247;--line:22 24 29;
+  --amber:156 88 7;--red:195 50 50;--green:18 112 60;--blue:11 95 204;--violet:105 61 214;--teal:0 118 96;--gold:141 96 0;--pink:176 40 145;
+  --planet:241 239 233;--limb:22 24 29;--haze:214 222 255;
+  --shadow-card:0 1px 2px rgb(22 24 29/.05),0 1px 1px rgb(22 24 29/.03);
+  --shadow-raised:0 2px 6px rgb(22 24 29/.07),0 1px 2px rgb(22 24 29/.05);
+  --shadow-overlay:0 30px 80px rgb(22 24 29/.16);
+  --scrim:22 24 29;--scrim-a:.35;--fog-a:.82;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme]){color-scheme:light;--base:250 249 247;--sunken:242 240 234;--card:255 255 255;--raised:255 255 255;--control:241 239 233;--hover:231 228 220;--active:219 215 205;--highest:205 200 189;--ink-strong:0 0 0;--ink:22 24 29;--muted:88 93 104;--dim:107 112 121;--faint:139 144 153;--on-ink:250 249 247;--line:22 24 29;--amber:156 88 7;--red:195 50 50;--green:18 112 60;--blue:11 95 204;--violet:105 61 214;--teal:0 118 96;--gold:141 96 0;--pink:176 40 145;--planet:241 239 233;--limb:22 24 29;--haze:214 222 255}}
+:root{
+  --sans:"Inter",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+  --ease-press:cubic-bezier(.2,0,0,1);
+  --ease-spring:linear(0,.0123,.0443,.0896,.1433,.202,.2627,.3235,.3829,.44,.4941,.5447,.5917,.6349,.6745,.7105,.7431,.7725,.7989,.8226,.8437,.8625,.8792,.8941,.9072,.9187,.929,.9379,.9458,.9528,.9589,.9642,.9688,.9729,.9765,.9796,.9823,.9846,.9867,.9885,1);
+  --t-quick:320ms;--t-spring:420ms;
+}
+
+/* ---------- Page ---------- */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:rgb(var(--base));color:rgb(var(--ink));font:15px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+:focus-visible{outline:2px solid rgb(var(--ink)/.8);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.muted{color:rgb(var(--muted))}
+.mono{font-family:var(--mono)}
+h1,h2,h3,h4{margin:0;color:rgb(var(--ink-strong));font-weight:600;letter-spacing:-.02em}
+
+/* Floating glass header, like the app's */
+.top{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:6px;padding:6px 6px 6px 14px;border-radius:999px;
+  background:rgb(var(--card)/var(--fog-a));backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border:1px solid rgb(var(--line)/.08);box-shadow:var(--shadow-raised);width:max-content;max-width:calc(100vw - 32px)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;letter-spacing:-.01em;text-decoration:none;margin-right:6px;white-space:nowrap}
+.mark{display:inline-block;width:18px;height:18px;border-radius:50%;border:1.5px solid rgb(var(--ink));position:relative;flex:none}
+.mark::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:rgb(var(--amber));top:-3px;right:-1px;box-shadow:0 0 8px rgb(var(--amber)/.7)}
+.top nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.top nav::-webkit-scrollbar{display:none}
+.top nav a{font-size:13px;color:rgb(var(--muted));text-decoration:none;padding:6px 12px;border-radius:999px;white-space:nowrap;transition:background var(--t-quick) var(--ease-press),color var(--t-quick)}
+.top nav a:hover{background:rgb(var(--hover));color:rgb(var(--ink))}
+.iconbtn{width:32px;height:32px;border-radius:999px;display:grid;place-items:center;color:rgb(var(--muted));flex:none;transition:background var(--t-quick) var(--ease-press)}
+.iconbtn:hover{background:rgb(var(--hover));color:rgb(var(--ink))}
+.iconbtn svg{width:16px;height:16px}
+
+/* Hero */
+.hero{position:relative;min-height:92vh;display:flex;align-items:center;overflow:hidden;padding:140px 0 200px}
+.hero .wrap{position:relative;z-index:2;width:100%}
+.ver{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:rgb(var(--muted));padding:4px 12px 4px 6px;border:1px solid rgb(var(--line)/.1);border-radius:999px;background:rgb(var(--card)/.5)}
+.ver b{font-family:var(--mono);font-weight:500;font-size:11px;padding:2px 7px;border-radius:999px;background:rgb(var(--amber)/.14);color:rgb(var(--amber))}
+.hero h1{font-size:clamp(40px,6.4vw,84px);line-height:1.02;letter-spacing:-.045em;margin:22px 0 22px;max-width:12ch}
+.hero p.lede{font-size:clamp(16px,1.6vw,19px);color:rgb(var(--muted));max-width:52ch;margin:0 0 32px}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.btn-l{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:999px;font-weight:500;font-size:14.5px;text-decoration:none;transition:transform 90ms var(--ease-press),background var(--t-quick)}
+.btn-l:active{transform:scale(.97)}
+.btn-l.solid{background:rgb(var(--ink-strong));color:rgb(var(--on-ink))}
+.btn-l.ghost{border:1px solid rgb(var(--line)/.14);color:rgb(var(--ink))}
+.btn-l.ghost:hover{background:rgb(var(--hover))}
+.btn-l svg{width:15px;height:15px}
+.planet{position:absolute;left:50%;top:calc(100% - 190px);width:max(150vw,1500px);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;z-index:1;
+  background:radial-gradient(60% 9% at 50% 0%,rgb(var(--limb)/.09),transparent 70%),rgb(var(--planet));
+  box-shadow:0 -1px 0 rgb(var(--limb)/.22),0 -40px 140px -20px rgb(var(--haze)/.16)}
+.planet::before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(40% 3% at 50% 0%,rgb(var(--limb)/.35),transparent 70%)}
+.orbitring{position:absolute;left:50%;top:calc(100% - 300px);width:min(1100px,130vw);height:220px;transform:translateX(-50%);z-index:1;pointer-events:none}
+.orbitring svg{width:100%;height:100%;overflow:visible}
+.sat{position:absolute;width:9px;height:9px;margin:-4.5px;border-radius:50%;background:rgb(var(--amber));box-shadow:0 0 14px 2px rgb(var(--amber)/.6);left:0;top:0}
+.stars{position:absolute;inset:0;z-index:0;background-image:radial-gradient(1px 1px at 12% 22%,rgb(var(--line)/.5),transparent),radial-gradient(1px 1px at 78% 14%,rgb(var(--line)/.4),transparent),radial-gradient(1px 1px at 64% 38%,rgb(var(--line)/.3),transparent),radial-gradient(1px 1px at 33% 48%,rgb(var(--line)/.25),transparent),radial-gradient(1px 1px at 90% 52%,rgb(var(--line)/.35),transparent),radial-gradient(1px 1px at 46% 10%,rgb(var(--line)/.3),transparent),radial-gradient(1.4px 1.4px at 22% 64%,rgb(var(--line)/.25),transparent);opacity:.8}
+[data-theme=light] .stars{opacity:.35}
+
+/* Sections */
+section.block{padding:110px 0 40px;scroll-margin-top:40px}
+.sec-head{max-width:640px;margin-bottom:40px}
+.sec-head h2{font-size:clamp(28px,3.4vw,42px);line-height:1.1;letter-spacing:-.035em;margin-bottom:12px}
+.sec-head p{color:rgb(var(--muted));margin:0;font-size:16px}
+
+/* ---------- Tour player ---------- */
+.tour{display:grid;grid-template-columns:270px minmax(0,1fr);gap:20px;align-items:start}
+.rail{position:sticky;top:84px;display:flex;flex-direction:column;gap:2px;padding:8px;border-radius:16px;background:rgb(var(--card)/.6);border:1px solid rgb(var(--line)/.07);max-height:calc(100vh - 110px);overflow:auto;scrollbar-width:thin}
+.ch{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;text-align:left;padding:9px 10px;border-radius:10px;color:rgb(var(--muted));transition:background var(--t-quick) var(--ease-press),color var(--t-quick)}
+.ch:hover{background:rgb(var(--hover)/.6);color:rgb(var(--ink))}
+.ch .n{font:500 11px/26px var(--mono);height:26px;width:26px;text-align:center;border-radius:50%;border:1px solid rgb(var(--line)/.12);color:rgb(var(--dim));transition:all var(--t-quick)}
+.ch b{display:block;font-weight:500;font-size:13.5px;line-height:1.35;color:inherit;margin-top:3px}
+.ch small{display:none;font-size:12px;line-height:1.45;color:rgb(var(--dim));margin-top:3px}
+.ch.on{background:rgb(var(--active)/.7);color:rgb(var(--ink-strong))}
+.ch.on small{display:block}
+.ch.on .n{border-color:rgb(var(--amber));color:rgb(var(--amber));box-shadow:0 0 12px rgb(var(--amber)/.35)}
+.ch.done .n{background:rgb(var(--green)/.14);border-color:transparent;color:rgb(var(--green))}
+
+.player{min-width:0}
+.stagebox{position:relative;width:100%;border-radius:18px;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1000px;height:620px;transform-origin:0 0}
+.cap{margin-top:14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 24px;align-items:start;padding:20px 22px;border-radius:16px;background:rgb(var(--card)/.6);border:1px solid rgb(var(--line)/.07)}
+.cap .meta{grid-column:1/-1;display:flex;justify-content:space-between;gap:12px;font-size:12.5px;color:rgb(var(--dim))}
+.cap .meta span:last-child{font-family:var(--mono);font-size:11.5px}
+.cap h3{font-size:21px;letter-spacing:-.025em;line-height:1.25}
+.cap p{margin:6px 0 0;color:rgb(var(--muted));max-width:62ch;font-size:14.5px}
+.ctrl{display:flex;align-items:center;gap:6px;align-self:center}
+.ctrl button{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid rgb(var(--line)/.1);color:rgb(var(--ink));transition:background var(--t-quick),transform 90ms var(--ease-press)}
+.ctrl button:hover{background:rgb(var(--hover))}
+.ctrl button:active{transform:scale(.94)}
+.ctrl button.play{width:48px;height:48px;background:rgb(var(--ink-strong));color:rgb(var(--on-ink));border:0}
+.ctrl svg{width:16px;height:16px}
+.dots{grid-column:1/-1;display:flex;gap:6px;margin-top:10px}
+.dots button{flex:1;height:4px;border-radius:4px;background:rgb(var(--line)/.1);position:relative;overflow:hidden;max-width:80px}
+.dots button::before{content:"";position:absolute;inset:-8px 0}
+.dots button.past{background:rgb(var(--ink)/.55)}
+.dots button i{position:absolute;inset:0;background:rgb(var(--amber));transform-origin:0 50%;transform:scaleX(0)}
+.dots button.cur{background:rgb(var(--line)/.18)}
+.hint{font-size:12px;color:rgb(var(--faint));margin-top:10px}
+.hint kbd{font:500 11px var(--mono);border:1px solid rgb(var(--line)/.14);border-bottom-width:2px;border-radius:5px;padding:1px 5px;color:rgb(var(--muted))}
+
+/* ---------- Mock app window (logical 1000x620) ---------- */
+.win{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:rgb(var(--base));color:rgb(var(--ink));border:1px solid rgb(var(--line)/.09);font-size:12.5px;line-height:1.45;box-shadow:var(--shadow-overlay);transition:background .5s,color .5s}
+.win::before{content:"";position:absolute;left:50%;top:420px;width:1800px;height:1800px;margin-left:-900px;border-radius:50%;background:rgb(var(--planet));box-shadow:0 -1px 0 rgb(var(--limb)/.12),0 -30px 120px -30px rgb(var(--haze)/.14);pointer-events:none}
+.chrome{position:absolute;inset:0 0 auto;height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid rgb(var(--line)/.06);background:rgb(var(--sunken));z-index:3}
+.chrome i{width:10px;height:10px;border-radius:50%;background:rgb(var(--line)/.14)}
+.url{margin:0 auto;font:11px var(--mono);color:rgb(var(--dim));padding:3px 14px;border-radius:999px;background:rgb(var(--control));min-width:300px;text-align:center}
+.ahdr{position:absolute;top:44px;left:50%;transform:translateX(-50%);height:40px;display:flex;align-items:center;gap:3px;padding:4px;border-radius:999px;background:rgb(var(--card)/var(--fog-a));border:1px solid rgb(var(--line)/.08);box-shadow:var(--shadow-raised);z-index:3;backdrop-filter:blur(16px)}
+.ahdr .mark{margin:0 8px 0 8px}
+.atab{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:rgb(var(--dim));transition:background var(--t-quick),color var(--t-quick)}
+.atab svg{width:15px;height:15px}
+.atab.on{background:rgb(var(--active));color:rgb(var(--ink-strong))}
+.ahdr .sep{width:1px;height:18px;background:rgb(var(--line)/.1);margin:0 4px}
+.scene{position:absolute;top:96px;left:20px;right:20px;bottom:18px;display:none;z-index:2}
+.scene.active{display:block}
+.instant *,.instant *::before,.instant *::after{transition:none!important}
+
+/* primitives inside the window */
+.win h3{font-size:15px;letter-spacing:-.015em}
+.win h4{font-size:12.5px;font-weight:600;letter-spacing:-.01em}
+.card{background:rgb(var(--card)/var(--fog-a));border:1px solid rgb(var(--line)/.07);border-radius:12px;box-shadow:var(--shadow-card);padding:14px;position:relative;backdrop-filter:blur(14px)}
+.lbl{font-size:11px;color:rgb(var(--dim));font-weight:500}
+.cap-mono{font:500 10px var(--mono);letter-spacing:.06em;color:rgb(var(--dim))}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:999px;background:rgb(var(--line)/.07);color:rgb(var(--muted));white-space:nowrap}
+.pill::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.pill.plain::before{display:none}
+.red{--c:var(--red)}.amber{--c:var(--amber)}.green{--c:var(--green)}.blue{--c:var(--blue)}.violet{--c:var(--violet)}.teal{--c:var(--teal)}.gold{--c:var(--gold)}.pink{--c:var(--pink)}
+.pill.red,.pill.amber,.pill.green,.pill.blue,.pill.violet,.pill.teal,.pill.gold,.pill.pink{background:rgb(var(--c)/.13);color:rgb(var(--c))}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;background:rgb(var(--control));border:1px solid rgb(var(--line)/.08);font-size:12px;font-weight:500;white-space:nowrap;transition:background var(--t-quick),transform 90ms var(--ease-press)}
+.btn svg{width:13px;height:13px}
+.btn.primary{background:rgb(var(--ink-strong));color:rgb(var(--on-ink));border-color:transparent}
+.btn.danger{background:rgb(var(--red)/.14);color:rgb(var(--red));border-color:transparent}
+.btn.wide{width:100%;height:36px}
+.btn.done{background:rgb(var(--green)/.14);color:rgb(var(--green))}
+.input{height:34px;border-radius:8px;background:rgb(var(--control));border:1px solid rgb(var(--line)/.08);display:flex;align-items:center;padding:0 11px;font-size:12.5px;gap:1px;overflow:hidden;white-space:nowrap}
+.input .ph{color:rgb(var(--faint))}
+.input .typed:not(:empty)+.ph{display:none}
+.input.focus,.input:has(.typed:not(:empty)){border-color:rgb(var(--line)/.22)}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.av{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:9.5px;font-weight:600;background:rgb(var(--highest));color:rgb(var(--ink-strong));position:relative;--h:var(--line)}
+.av.xs{width:18px;height:18px;font-size:7.5px}.av.lg{width:52px;height:52px;font-size:16px}.av.md{width:34px;height:34px;font-size:11px}
+.av[data-r=owner]{--h:var(--gold)}.av[data-r=exec]{--h:var(--violet)}.av[data-r=mgr]{--h:var(--blue)}.av[data-r=lead]{--h:var(--teal)}
+.av[data-r]:not([data-r=member]){box-shadow:0 0 0 2px rgb(var(--card)),0 0 0 3.5px rgb(var(--h)),0 0 14px rgb(var(--h)/.45)}
+.av .dot,.dot.on-line{position:absolute;right:-1px;bottom:-1px;width:8px;height:8px;border-radius:50%;background:rgb(var(--green));box-shadow:0 0 0 2px rgb(var(--card))}
+.av .dot.off{background:rgb(var(--faint))}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px 0 3px;border-radius:999px;background:rgb(var(--active));font-size:11.5px;font-weight:500}
+.fade{opacity:0;visibility:hidden;transition:opacity var(--t-quick) var(--ease-press),visibility 0s linear var(--t-quick),transform var(--t-spring) var(--ease-spring)}
+.fade.on{opacity:1;visibility:visible;transition:opacity var(--t-quick) var(--ease-press),visibility 0s,transform var(--t-spring) var(--ease-spring)}
+.pop{transform:scale(.96) translateY(6px)}.pop.on{transform:none}
+.scrim{position:absolute;inset:-8px;border-radius:12px;background:rgb(var(--scrim)/var(--scrim-a));z-index:20}
+.modal{position:absolute;left:50%;top:50%;width:400px;margin-left:-200px;transform-origin:50% 50%;z-index:21;background:rgb(var(--raised));border:1px solid rgb(var(--line)/.1);border-radius:14px;box-shadow:var(--shadow-overlay);padding:18px}
+.modal h3{margin-bottom:12px}
+.mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+.seg{display:inline-flex;padding:2px;border-radius:8px;background:rgb(var(--control));border:1px solid rgb(var(--line)/.08)}
+.seg span{padding:4px 10px;border-radius:6px;font-size:11.5px;color:rgb(var(--muted));transition:background var(--t-quick),color var(--t-quick)}
+.seg span.on{background:rgb(var(--active));color:rgb(var(--ink-strong))}
+.wtoast{position:absolute;left:50%;bottom:22px;z-index:40;transform:translate(-50%,10px);display:flex;align-items:center;gap:8px;padding:9px 14px 9px 10px;border-radius:999px;background:rgb(var(--raised));border:1px solid rgb(var(--line)/.12);box-shadow:var(--shadow-overlay);font-size:12px;font-weight:500;white-space:nowrap}
+.wtoast.on{transform:translate(-50%,0)}
+.wtoast .ok{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:rgb(var(--green)/.16);color:rgb(var(--green))}
+.wtoast .ok svg{width:11px;height:11px}
+.tip{position:absolute;z-index:15;background:rgb(var(--raised));border:1px solid rgb(var(--line)/.12);border-radius:10px;padding:9px 11px;box-shadow:var(--shadow-overlay);font-size:11.5px;width:max-content;max-width:240px}
+.card:has(.tip.on){z-index:10}
+.tip b{display:block;font-weight:600;color:rgb(var(--ink-strong));margin-bottom:2px}
+.i{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lit{background:rgb(var(--amber)/.08)!important;box-shadow:inset 2px 0 0 rgb(var(--amber))}
+.glow{box-shadow:0 0 0 1px rgb(var(--amber)/.5),0 0 30px rgb(var(--amber)/.18)!important}
+.flash{animation:flash 1.6s var(--ease-press)}
+@keyframes flash{0%{background:rgb(var(--amber)/.18)}100%{background:transparent}}
+.meter{height:6px;border-radius:6px;background:rgb(var(--line)/.08);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:6px;background:rgb(var(--ink)/.7);transform-origin:0 50%}
+.meter i.full{background:rgb(var(--amber))}
+
+/* cursor */
+#cursor{position:absolute;left:0;top:0;width:22px;height:22px;z-index:100;pointer-events:none;filter:drop-shadow(0 2px 4px rgb(0 0 0/.45));will-change:transform}
+#cursor svg{width:22px;height:22px;display:block}
+#ripple{position:absolute;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:2px solid rgb(var(--amber));z-index:99;pointer-events:none;opacity:0}
+
+/* ---------- Scene: start ---------- */
+.s-start .auth{position:absolute;left:50%;top:50%;width:340px;margin-left:-170px;transform:translateY(-50%);padding:22px}
+.s-start .auth.fade.pop{transform:translateY(-50%) scale(.96)}
+.s-start .auth.fade.pop.on{transform:translateY(-50%)}
+.s-start .auth h3{font-size:17px;margin:14px 0 2px}
+.s-start .auth > p{margin:0 0 16px;color:rgb(var(--muted))}
+.chips{display:flex;flex-wrap:wrap;gap:6px;min-height:24px;margin:8px 0 12px}
+.seatrow{display:flex;justify-content:space-between;font-size:11px;color:rgb(var(--dim));margin-bottom:6px}
+.sent{position:absolute;inset:0;border-radius:12px;background:rgb(var(--raised));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:24px}
+.bigok{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgb(var(--green)/.14);color:rgb(var(--green))}
+.bigok svg{width:22px;height:22px}
+
+/* ---------- Scene: dashboard ---------- */
+.greet{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 12px}
+.greet h3{font-size:19px;letter-spacing:-.03em}
+.dgrid{display:grid;grid-template-columns:262px minmax(0,1fr) 250px;gap:12px;height:448px}
+.dcol{display:flex;flex-direction:column;gap:12px;min-height:0}
+.moon{display:flex;gap:14px;align-items:center}
+.moon svg{width:96px;height:96px;flex:none}
+.score{font:600 30px/1 var(--sans);letter-spacing:-.04em;color:rgb(var(--ink-strong))}
+.list{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.li{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:8px;transition:background var(--t-quick)}
+.li .grow{flex:1;min-width:0}
+.li .grow div:first-child{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li .sub{font-size:11px;color:rgb(var(--dim))}
+.bk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.bkt{padding:10px;border-radius:10px;background:rgb(var(--control)/.7);border:1px solid rgb(var(--line)/.06);text-align:left;transition:background var(--t-quick),border-color var(--t-quick)}
+.bkt b{display:block;font:600 22px/1.1 var(--mono);letter-spacing:-.04em;color:rgb(var(--ink-strong))}
+.bkt span{font-size:10.5px;color:rgb(var(--dim))}
+.bkt.sel{border-color:rgb(var(--c,var(--line))/.6);background:rgb(var(--c,var(--line))/.1)}
+.bkt.red b{color:rgb(var(--red))}
+.risk .rrow{padding:9px 8px;border-radius:8px}
+.rx{display:flex;gap:14px;margin-top:8px;font-size:11px;color:rgb(var(--muted));align-items:center}
+.cd{font:500 26px/1 var(--mono);letter-spacing:-.03em;color:rgb(var(--ink-strong));margin:8px 0 10px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:10px;color:rgb(var(--dim))}
+.week i{display:block;height:20px;border-radius:5px;background:rgb(var(--line)/.06);margin-top:4px}
+.week .t i{background:rgb(var(--amber)/.25);box-shadow:inset 0 0 0 1px rgb(var(--amber)/.6)}
+.week .h i{background:repeating-linear-gradient(135deg,rgb(var(--line)/.08) 0 3px,transparent 3px 6px)}
+.wl{display:grid;grid-template-columns:auto 1fr 26px;align-items:center;gap:9px;padding:6px 0;font-size:11.5px}
+.wl .meter{height:5px}
+.wl b{font:500 11px var(--mono);text-align:right}
+.banner{position:absolute;left:280px;right:270px;top:-6px;z-index:9;display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;background:rgb(var(--red)/.12);color:rgb(var(--red));font-size:11.5px;font-weight:500}
+
+/* ---------- Scene: projects ---------- */
+.pgrid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px;height:100%}
+.prow{display:flex;align-items:center;gap:9px;padding:9px 8px;border-radius:9px;transition:background var(--t-quick)}
+.prow.on{background:rgb(var(--active)/.8)}
+.prow .pr{font:500 10px var(--mono);color:rgb(var(--dim));width:16px}
+.hdot{width:7px;height:7px;border-radius:50%;background:rgb(var(--c));box-shadow:0 0 8px rgb(var(--c)/.6);margin-left:auto}
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ph .btn{margin-left:auto}
+.tabs{display:flex;gap:2px;border-bottom:1px solid rgb(var(--line)/.07);margin:0 -14px 10px;padding:0 10px}
+.tab{padding:7px 10px;font-size:12px;color:rgb(var(--dim));position:relative;transition:color var(--t-quick)}
+.tab.on{color:rgb(var(--ink-strong))}
+.tab.on::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;border-radius:2px;background:rgb(var(--ink-strong))}
+.pane{display:none}.pane.on{display:block}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-size:10.5px;font-weight:500;color:rgb(var(--dim));text-align:left;padding:5px 8px;border-bottom:1px solid rgb(var(--line)/.06)}
+.tbl td{padding:8px;border-bottom:1px solid rgb(var(--line)/.05)}
+.stack{display:flex}.stack .av{margin-left:-6px;box-shadow:0 0 0 2px rgb(var(--card))}.stack .av:first-child{margin-left:0}
+.feed .li{align-items:flex-start}
+.feed .ic{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:rgb(var(--c,var(--line))/.12);color:rgb(var(--c,var(--muted)));flex:none}
+.feed .ic svg{width:12px;height:12px}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:rgb(var(--green))}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.post{padding:12px;border-radius:10px;background:rgb(var(--control)/.6);margin-top:8px}
+.post .who{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11.5px}
+.ver-badge{display:inline-flex;align-items:center;gap:3px;color:rgb(var(--blue));font-size:10.5px}
+.ver-badge svg{width:11px;height:11px}
+.uprow .meter{margin-top:6px}
+
+/* ---------- Scene: calendar ---------- */
+.ctool{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ctool h3{font-size:17px;margin-right:6px}
+.ctool .r{margin-left:auto;display:flex;gap:6px}
+.calc{padding:0;overflow:hidden;height:446px}
+.cgrid{display:grid;grid-template-columns:44px repeat(7,1fr)}
+.chd{padding:7px 8px;font-size:11px;color:rgb(var(--dim));border-bottom:1px solid rgb(var(--line)/.07);border-left:1px solid rgb(var(--line)/.05);height:40px}
+.chd b{display:block;font:600 14px/1.2 var(--sans);color:rgb(var(--ink))}
+.chd.today b{color:rgb(var(--amber))}
+.chd.hol{color:rgb(var(--violet))}
+.alld{height:28px;border-bottom:1px solid rgb(var(--line)/.07);border-left:1px solid rgb(var(--line)/.05);padding:3px}
+.task{font-size:10.5px;font-weight:500;padding:2px 6px;border-radius:5px;background:rgb(var(--c)/.14);color:rgb(var(--c));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hours{font:10px var(--mono);color:rgb(var(--faint))}
+.hours div{height:40px;padding:2px 6px;text-align:right}
+.col{position:relative;height:360px;border-left:1px solid rgb(var(--line)/.05);background:repeating-linear-gradient(to bottom,transparent 0 39px,rgb(var(--line)/.05) 39px 40px)}
+.col.wknd,.col.hol{background:repeating-linear-gradient(135deg,rgb(var(--line)/.035) 0 4px,transparent 4px 9px),repeating-linear-gradient(to bottom,transparent 0 39px,rgb(var(--line)/.05) 39px 40px)}
+.col.hol{box-shadow:inset 0 0 0 999px rgb(var(--violet)/.04)}
+.ev{position:absolute;left:3px;right:3px;border-radius:6px;padding:4px 6px;font-size:10.5px;line-height:1.3;background:rgb(var(--c)/.16);color:rgb(var(--ink));border-left:2.5px solid rgb(var(--c));overflow:hidden;transition:background .5s,border-color .5s}
+.ev b{display:block;font-weight:600;color:rgb(var(--c));transition:color .5s}
+.slot{position:absolute;left:3px;right:3px;border-radius:6px;border:1.5px dashed rgb(var(--green)/.7);background:rgb(var(--green)/.08);color:rgb(var(--green));font-size:10px;font-weight:600;display:grid;place-items:center}
+.nowline{position:absolute;left:0;right:0;height:2px;background:rgb(var(--amber));z-index:2}
+.nowline::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:rgb(var(--amber))}
+.feedpop{position:absolute;right:0;top:40px;width:300px;z-index:12}
+.feedlink{font:10.5px var(--mono);padding:8px 10px;border-radius:8px;background:rgb(var(--control));color:rgb(var(--muted));margin:8px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.apps{display:flex;gap:6px;margin-top:8px}
+.apps span{font-size:10.5px;padding:3px 8px;border-radius:6px;background:rgb(var(--line)/.06);color:rgb(var(--muted))}
+
+/* ---------- Scene: calls ---------- */
+.cgrid2{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px;height:100%}
+.contact{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.contact .av.lg{margin-bottom:8px}
+.callbar{display:flex;gap:8px;margin-top:14px}
+.callbtn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgb(var(--control));border:1px solid rgb(var(--line)/.08)}
+.callbtn.go{background:rgb(var(--green));color:#fff;border:0}
+.callbtn svg{width:17px;height:17px}
+.room{position:absolute;inset:0;z-index:10;border-radius:14px;background:rgb(var(--sunken));border:1px solid rgb(var(--line)/.08);overflow:hidden;box-shadow:var(--shadow-overlay)}
+.room .rtop{position:absolute;left:14px;right:14px;top:12px;display:flex;align-items:center;gap:10px;z-index:3}
+.tiles{position:absolute;left:14px;right:14px;top:48px;bottom:74px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.tile{border-radius:12px;background:rgb(var(--control));border:1px solid rgb(var(--line)/.06);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative}
+.tile .nm{position:absolute;left:10px;bottom:9px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:6px;padding:3px 8px;border-radius:999px;background:rgb(var(--base)/.6)}
+.tile .nm svg{width:11px;height:11px;color:rgb(var(--green))}
+.tile.speak{box-shadow:inset 0 0 0 2px rgb(var(--green)/.7)}
+.rctrl{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:6px;border-radius:999px;background:rgb(var(--card)/.9);border:1px solid rgb(var(--line)/.08);z-index:3}
+.rctrl .callbtn{width:40px;height:40px}
+.rctrl .callbtn.off{background:rgb(var(--red)/.15);color:rgb(var(--red))}
+.rctrl .callbtn.end{background:rgb(var(--red));color:#fff;border:0}
+.rctrl .callbtn.act{background:rgb(var(--amber)/.18);color:rgb(var(--amber))}
+.ringing{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgb(var(--sunken))}
+.rings{position:relative;width:110px;height:110px;display:grid;place-items:center}
+.rings::before,.rings::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid rgb(var(--green)/.6);animation:ring 1.8s var(--ease-press) infinite}
+.rings::after{animation-delay:.9s}
+@keyframes ring{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.notices{position:absolute;left:14px;top:48px;z-index:5;display:flex;flex-direction:column;gap:6px}
+.notice{font-size:11px;padding:5px 10px;border-radius:999px;background:rgb(var(--base)/.8);border:1px solid rgb(var(--line)/.1);width:max-content}
+.consent{width:360px;margin-left:-180px}
+.vote{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgb(var(--line)/.05)}
+.vote .v{margin-left:auto;font-size:11px;color:rgb(var(--dim))}
+.vote .v.yes{color:rgb(var(--green))}
+.mini{position:absolute;right:16px;bottom:16px;width:230px;z-index:14;padding:10px;border-radius:14px;background:rgb(var(--raised));border:1px solid rgb(var(--line)/.1);box-shadow:var(--shadow-overlay)}
+.mini .mh{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:500;margin-bottom:8px;cursor:grab}
+.mini .grip{margin-left:auto;color:rgb(var(--faint));font:12px var(--mono);letter-spacing:-2px}
+.mini .mt{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.mini .mt div{height:44px;border-radius:8px;background:rgb(var(--control));display:grid;place-items:center}
+.mini .mc{display:flex;gap:6px;margin-top:8px;justify-content:center}
+.mini .mc .callbtn{width:30px;height:30px}
+.mini .mc .callbtn svg{width:13px;height:13px}
+.txb{font-size:10.5px;font-weight:500;color:rgb(var(--red));display:inline-flex;align-items:center;gap:5px}
+.txb::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.2s infinite}
+
+/* ---------- Scene: messages ---------- */
+.mgrid{display:grid;grid-template-columns:250px minmax(0,1fr);gap:12px;height:100%}
+.conv{display:flex;align-items:center;gap:9px;padding:9px 8px;border-radius:9px;transition:background var(--t-quick)}
+.conv.on{background:rgb(var(--active)/.8)}
+.conv .grow{flex:1;min-width:0}
+.conv .grow div:first-child{font-weight:500;display:flex;align-items:center;gap:5px}
+.conv .sub{font-size:11px;color:rgb(var(--dim));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:rgb(var(--amber));color:#111;font:600 10px/18px var(--sans);text-align:center}
+.thread{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.thead{height:58px;display:flex;align-items:center;gap:10px;padding:0 14px;position:relative;border-bottom:1px solid rgb(var(--line)/.07);flex:none}
+.thead::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgb(var(--c,var(--line))/.18),transparent 60%);pointer-events:none}
+.pinbar{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:11.5px;background:rgb(var(--amber)/.08);color:rgb(var(--amber));border-bottom:1px solid rgb(var(--line)/.06)}
+.pinbar svg{width:12px;height:12px}
+.msgs{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;justify-content:flex-end}
+.bub{max-width:68%;padding:8px 11px;border-radius:14px;background:rgb(var(--control));font-size:12px;align-self:flex-start;border-bottom-left-radius:4px}
+.bub.me{align-self:flex-end;background:rgb(var(--ink-strong));color:rgb(var(--on-ink));border-radius:14px;border-bottom-right-radius:4px}
+.bub .from{font-size:10.5px;font-weight:600;color:rgb(var(--dim));margin-bottom:2px}
+.status{align-self:flex-end;font-size:10.5px;color:rgb(var(--dim));margin-top:-4px}
+.status.read{color:rgb(var(--blue))}
+.tref{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border-radius:6px;background:rgb(var(--blue)/.18);color:rgb(var(--blue));font-weight:500;font-size:11px}
+.bub.me .tref{background:rgb(var(--on-ink)/.12);color:inherit}
+.tref svg{width:10px;height:10px}
+.comp{display:flex;align-items:center;gap:6px;padding:10px 12px;border-top:1px solid rgb(var(--line)/.07);flex:none;position:relative}
+.comp .input{flex:1}
+.comp .iconb{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:rgb(var(--muted))}
+.comp .iconb svg{width:15px;height:15px}
+.gifbox{position:absolute;right:12px;bottom:56px;width:300px;z-index:10;padding:10px}
+.gifgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.gifgrid div{height:58px;border-radius:8px}
+.g1{background:radial-gradient(circle at 30% 30%,rgb(var(--amber)),rgb(var(--pink)))}
+.g2{background:radial-gradient(circle at 70% 40%,rgb(var(--teal)),rgb(var(--blue)))}
+.g3{background:radial-gradient(circle at 40% 70%,rgb(var(--violet)),rgb(var(--blue)))}
+.g4{background:radial-gradient(circle at 50% 50%,rgb(var(--gold)),rgb(var(--red)))}
+.g5{background:radial-gradient(circle at 20% 80%,rgb(var(--green)),rgb(var(--teal)))}
+.g6{background:radial-gradient(circle at 80% 20%,rgb(var(--pink)),rgb(var(--violet)))}
+.gifmsg{width:150px;height:96px;border-radius:12px;align-self:flex-end;position:relative;overflow:hidden}
+.gifmsg::after{content:"GIF";position:absolute;left:8px;bottom:6px;font:600 9px var(--mono);color:#fff;opacity:.8}
+
+/* ---------- Scene: people ---------- */
+.canvas{position:absolute;inset:0;border-radius:14px;background-color:rgb(var(--card)/.4);background-image:radial-gradient(rgb(var(--line)/.09) 1px,transparent 1px);background-size:18px 18px;border:1px solid rgb(var(--line)/.06);overflow:hidden}
+.canvas svg.wires{position:absolute;inset:0;width:100%;height:100%}
+.wires path{fill:none;stroke:rgb(var(--line)/.22);stroke-width:1.5}
+.wires path.new{stroke:rgb(var(--pink));stroke-width:2}
+.node{position:absolute;width:170px;height:56px;display:flex;align-items:center;gap:10px;padding:0 12px;border-radius:12px;background:rgb(var(--raised));border:1px solid rgb(var(--line)/.1);box-shadow:var(--shadow-raised);z-index:2}
+.node::after{content:"";position:absolute;left:10px;right:10px;top:-1px;height:2px;border-radius:2px;background:rgb(var(--dc,var(--line))/var(--dca,0));transition:all .4s}
+.node .nm{font-weight:600;font-size:12px;line-height:1.2}
+.node .rk{font-size:10.5px;color:rgb(var(--dim))}
+.node.lift{box-shadow:var(--shadow-overlay);transform:scale(1.04)}
+.tray{position:absolute;left:10px;top:362px;width:200px;height:124px;border-radius:12px;border:1.5px dashed rgb(var(--line)/.14);padding:8px 10px;font-size:11px;color:rgb(var(--dim))}
+.ghostslot{position:absolute;left:500px;top:380px;width:170px;height:56px;border-radius:12px;border:1.5px dashed rgb(var(--pink)/.7);background:rgb(var(--pink)/.06)}
+.ptool{position:absolute;right:10px;top:10px;display:flex;gap:6px;z-index:5}
+.legend{position:absolute;left:10px;top:10px;z-index:5;display:flex;gap:12px;padding:8px 12px;border-radius:10px;background:rgb(var(--raised));border:1px solid rgb(var(--line)/.1);font-size:11px}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:50%;background:rgb(var(--c));box-shadow:0 0 8px rgb(var(--c)/.7)}
+.sidep{position:absolute;right:10px;top:52px;bottom:10px;width:270px;z-index:8;padding:0;overflow:hidden;transform:translateX(24px)}
+.sidep.on{transform:none}
+.sidep .in{padding:14px}
+.dept{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgb(var(--line)/.05)}
+.dept i{width:10px;height:10px;border-radius:3px;background:rgb(var(--c))}
+.swatches{display:grid;grid-template-columns:repeat(11,1fr);gap:5px;margin-top:10px}
+.swatches i{aspect-ratio:1;border-radius:50%}
+.pbanner{height:70px;background:linear-gradient(120deg,rgb(var(--pink)/.55),rgb(var(--violet)/.35))}
+.pinfo{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:11.5px;margin-top:12px}
+.pinfo dt{color:rgb(var(--dim))}.pinfo dd{margin:0;font-weight:500}
+
+/* ---------- Scene: gates / admin / vault ---------- */
+.gate{position:absolute;left:50%;top:50%;width:320px;margin:-130px 0 0 -160px;text-align:center;padding:24px;z-index:6}
+.gate .lock{width:46px;height:46px;margin:0 auto 12px;border-radius:14px;display:grid;place-items:center;background:rgb(var(--control));border:1px solid rgb(var(--line)/.1)}
+.gate .lock svg{width:20px;height:20px}
+.gate p{color:rgb(var(--muted));margin:4px 0 16px;font-size:12px}
+.pdots{display:flex;gap:10px;justify-content:center;margin-bottom:16px}
+.pdots i{width:12px;height:12px;border-radius:50%;border:1.5px solid rgb(var(--line)/.3);transition:background .15s,border-color .15s,transform .2s var(--ease-press)}
+.pdots i.f{background:rgb(var(--ink-strong));border-color:rgb(var(--ink-strong));transform:scale(1.1)}
+.pdots.ok i{background:rgb(var(--green));border-color:rgb(var(--green))}
+.gate a{font-size:11px;color:rgb(var(--dim))}
+.agrid{display:grid;grid-template-columns:190px minmax(0,1fr);gap:12px;height:100%}
+.snav{padding:8px}
+.snav div{padding:8px 10px;border-radius:8px;color:rgb(var(--muted));display:flex;align-items:center;gap:8px;transition:background var(--t-quick),color var(--t-quick)}
+.snav div svg{width:13px;height:13px}
+.snav div.on{background:rgb(var(--active)/.8);color:rgb(var(--ink-strong))}
+.imcard{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:rgb(var(--amber)/.06);border:1px solid rgb(var(--amber)/.2);margin-bottom:12px;position:relative}
+.rkbtn{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:7px;background:rgb(var(--control));border:1px solid rgb(var(--line)/.08);font-size:11.5px}
+.rkbtn i{width:8px;height:8px;border-radius:50%;background:rgb(var(--c));box-shadow:0 0 6px rgb(var(--c)/.6)}
+.rkmenu{position:absolute;right:14px;width:170px;z-index:10;padding:5px}
+.rkmenu div{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;font-size:11.5px}
+.rkmenu div i{width:8px;height:8px;border-radius:50%;background:rgb(var(--c,var(--faint)))}
+.rkmenu div.hov{background:rgb(var(--hover))}
+
+/* tickets */
+.ladder{height:132px;padding:16px 20px}
+.lad{position:relative;height:70px;margin-top:10px}
+.lad .track{position:absolute;left:60px;right:60px;top:17px;height:2px;background:rgb(var(--line)/.1)}
+.lad .stepn{position:absolute;top:0;width:120px;margin-left:-60px;text-align:center;font-size:11px}
+.lad .stepn .av{margin:0 auto 6px;width:36px;height:36px;font-size:10.5px}
+.lad .stepn .av.im{background:rgb(var(--amber)/.18);color:rgb(var(--amber))}
+.lad .stepn .av.im svg{width:15px;height:15px}
+.lad .stepn small{display:block;color:rgb(var(--dim));font-size:10px}
+.token{position:absolute;top:7px;left:0;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:rgb(var(--c));box-shadow:0 0 0 4px rgb(var(--c)/.2),0 0 18px rgb(var(--c)/.7);z-index:3}
+.ttypes{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:12px}
+.ttype{padding:9px 10px;border-radius:9px;border:1px solid rgb(var(--line)/.08);background:rgb(var(--control)/.6);font-size:11.5px;transition:border-color var(--t-quick),background var(--t-quick)}
+.ttype b{display:block;font-weight:600;font-size:12px}
+.ttype small{color:rgb(var(--dim));font-size:10.5px}
+.ttype.on{border-color:rgb(var(--amber)/.6);background:rgb(var(--amber)/.08)}
+.trow{display:grid;grid-template-columns:110px minmax(0,1fr) 190px 80px;align-items:center;gap:10px;padding:9px 8px;border-bottom:1px solid rgb(var(--line)/.05);border-radius:8px}
+
+/* vault */
+.cats{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.cat{font-size:11px;padding:4px 10px;border-radius:999px;background:rgb(var(--control));color:rgb(var(--muted));border:1px solid rgb(var(--line)/.06);transition:background var(--t-quick),color var(--t-quick)}
+.cat b{font:500 10px var(--mono);margin-left:4px;color:rgb(var(--faint))}
+.cat.on{background:rgb(var(--ink-strong));color:rgb(var(--on-ink))}
+.cat.on b{color:rgb(var(--on-ink)/.6)}
+.drow{display:grid;grid-template-columns:28px minmax(0,1fr) 100px 110px 28px;align-items:center;gap:10px;padding:9px 8px;border-bottom:1px solid rgb(var(--line)/.05);transition:opacity .3s}
+.drow.hide{display:none}
+.ficon{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;background:rgb(var(--control));color:rgb(var(--muted))}
+.ficon svg{width:13px;height:13px}
+.vmenu{position:absolute;right:40px;width:160px;z-index:10;padding:5px}
+.vmenu div{padding:7px 9px;border-radius:7px;font-size:11.5px;display:flex;align-items:center;gap:8px}
+.vmenu div svg{width:12px;height:12px}
+.vmenu div.del{color:rgb(var(--red))}
+
+/* settings */
+.sp h3{margin-bottom:4px}
+.sp > p{margin:0 0 14px;color:rgb(var(--muted))}
+.mrow2{display:grid;grid-template-columns:130px 1fr 92px;align-items:center;gap:12px;padding:8px 0;font-size:12px}
+.mrow2 b{font:500 11px var(--mono);text-align:right;color:rgb(var(--muted))}
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.plan{padding:11px;border-radius:10px;border:1px solid rgb(var(--line)/.08);background:rgb(var(--control)/.5);transition:opacity .3s,border-color .3s,transform .3s var(--ease-press)}
+.plan b{display:block;font-size:12.5px}
+.plan .pr{font:600 16px var(--mono);letter-spacing:-.03em;color:rgb(var(--ink-strong));margin:4px 0}
+.plan small{display:block;color:rgb(var(--dim));font-size:10.5px;line-height:1.5}
+.plan.cur{border-color:rgb(var(--line)/.25)}
+.plans.focus .plan:not(.lit2){opacity:.45}
+.plan.lit2{border-color:rgb(var(--amber)/.6);background:rgb(var(--amber)/.06);transform:translateY(-3px)}
+.limitmsg{display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:rgb(var(--amber)/.08);border:1px solid rgb(var(--amber)/.25);color:rgb(var(--ink));font-size:11.5px;margin-top:6px}
+.limitmsg svg{color:rgb(var(--amber));width:15px;height:15px;margin-top:1px}
+.tgl{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgb(var(--line)/.05)}
+.tgl small{display:block;color:rgb(var(--dim));font-size:11px}
+.sw{width:34px;height:20px;border-radius:999px;background:rgb(var(--green));position:relative;transition:background .25s;flex:none}
+.sw::after{content:"";position:absolute;top:2px;left:16px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .3s var(--ease-spring)}
+.sw.offs{background:rgb(var(--highest))}
+.sw.offs::after{transform:translateX(-14px)}
+.themes{display:flex;gap:10px;margin:10px 0 16px}
+.thm{width:120px;border-radius:10px;border:1.5px solid rgb(var(--line)/.1);padding:6px;font-size:11.5px;text-align:center;transition:border-color .25s}
+.thm div{height:56px;border-radius:7px;margin-bottom:6px}
+.thm.on{border-color:rgb(var(--amber))}
+.thm .tl{background:linear-gradient(#faf9f7 0 30%,#f1efe9 30%)}
+.thm .td{background:linear-gradient(#141414 0 30%,#050505 30%)}
+.thm .ts{background:linear-gradient(90deg,#f1efe9 50%,#0b0b0b 50%)}
+.sess{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgb(var(--line)/.05);transition:opacity .4s}
+.sess.gone{opacity:.3}
+
+/* ---------- Reference sections ---------- */
+.ranks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.rank{padding:22px 18px;border-radius:16px;background:rgb(var(--card)/.6);border:1px solid rgb(var(--line)/.07)}
+.rank .av{width:44px;height:44px;font-size:13px;margin-bottom:16px}
+.rank h3{font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.rank p{margin:0;font-size:13.5px;color:rgb(var(--muted))}
+.imnote{margin-top:14px;padding:16px 18px;border-radius:14px;border:1px dashed rgb(var(--amber)/.35);color:rgb(var(--muted));font-size:14px}
+.imnote b{color:rgb(var(--ink))}
+.flow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px}
+.panel{padding:22px;border-radius:16px;background:rgb(var(--card)/.6);border:1px solid rgb(var(--line)/.07)}
+.panel h3{font-size:16px;margin-bottom:4px}
+.panel > p{margin:0 0 18px;color:rgb(var(--muted));font-size:13.5px}
+.climb{display:flex;flex-direction:column;gap:0;position:relative}
+.climb li{list-style:none;display:flex;align-items:center;gap:12px;padding:10px 0;position:relative}
+.climb li:not(:last-child)::after{content:"";position:absolute;left:15px;top:38px;height:calc(100% - 28px);width:2px;background:rgb(var(--line)/.1)}
+.climb .av{width:32px;height:32px;font-size:10px}
+.climb ul{margin:0;padding:0}
+.climb small{color:rgb(var(--dim));font-size:12.5px;display:block}
+table.ref{width:100%;border-collapse:collapse;font-size:14px}
+table.ref th,table.ref td{text-align:left;padding:12px 14px;border-bottom:1px solid rgb(var(--line)/.07);vertical-align:top}
+table.ref th{font-weight:500;color:rgb(var(--dim));font-size:12.5px}
+table.ref td:first-child{color:rgb(var(--muted))}
+table.ref tbody tr:hover td{background:rgb(var(--hover)/.35)}
+.tblwrap{overflow-x:auto;border-radius:16px;border:1px solid rgb(var(--line)/.07);background:rgb(var(--card)/.6)}
+.tblwrap table th.pro,.tblwrap table td.pro{background:rgb(var(--amber)/.05)}
+.price{font:600 20px var(--mono);letter-spacing:-.03em;color:rgb(var(--ink-strong))}
+.tips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px}
+.tips div{padding:20px 0;border-top:1px solid rgb(var(--line)/.08)}
+.tips h3{font-size:15.5px;margin-bottom:6px}
+.tips p{margin:0;color:rgb(var(--muted));font-size:14px;max-width:56ch}
+footer{padding:80px 0 60px;margin-top:80px;border-top:1px solid rgb(var(--line)/.07);color:rgb(var(--dim));font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+
+/* ---------- Responsive ---------- */
+@media (max-width:980px){
+  .tour{grid-template-columns:1fr}
+  .rail{position:static;flex-direction:row;overflow-x:auto;max-height:none;padding:6px;gap:4px;scroll-snap-type:x mandatory}
+  .ch{grid-template-columns:22px auto;flex:none;scroll-snap-align:start;padding:7px 10px}
+  .ch .n{width:22px;height:22px;line-height:22px;font-size:10px}
+  .ch b{margin-top:1px;white-space:nowrap;font-size:13px}
+  .ch.on small{display:none}
+  .ranks{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .top{padding-left:10px}.top .brand span{display:none}
+  .top nav a{padding:6px 9px;font-size:12.5px}
+  .hero{min-height:auto;padding:120px 0 170px}
+  .cap{grid-template-columns:1fr;padding:16px}
+  .ctrl{justify-content:flex-start}
+  .stagebox{border-radius:12px}
+  .ranks{grid-template-columns:1fr}
+  .tips{grid-template-columns:1fr}
+  section.block{padding:80px 0 20px}
+  .hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+@media (prefers-reduced-transparency:reduce){
+  .top,.card,.ahdr{backdrop-filter:none;background:rgb(var(--card))}
+}
+</style>
+</head>
+<body>
+
+<!-- Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5a5 5 0 0 1 5.5 5"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z"/><path d="M14 7v10" stroke-dasharray="2 2.5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-camoff" viewBox="0 0 24 24"><path d="M3 7h11v10H3zM14 10l7-3v10l-7-3M2 3l20 18"/></symbol>
+    <symbol id="i-min" viewBox="0 0 24 24"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></symbol>
+    <symbol id="i-pip" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><rect x="12" y="12" width="7" height="5" rx="1"/></symbol>
+    <symbol id="i-end" viewBox="0 0 24 24"><path d="M3 14c5-5 13-5 18 0l-2 3-4-1v-3a10 10 0 0 0-6 0v3l-4 1z"/></symbol>
+    <symbol id="i-tx" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-addp" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-7z"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></symbol>
+    <symbol id="i-gif" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M10 10H8v4h2v-2M13 10v4M16.5 14v-4h2M16.5 12H18"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 3h6l-1 6 4 4H6l4-4zM12 13v8"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" stroke-width="3"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.8-3.5M4 4v4h4M4 13a8 8 0 0 0 14.8 3.5M20 20v-4h-4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke-width="3"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2zM12 10v5M12 18h.01"/></symbol>
+    <symbol id="i-arrowup" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-hash" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14M10 4L8 20M16 4l-2 16"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></symbol>
+  </defs>
+</svg>
+
+<header class="top" aria-label="Guide navigation">
+  <a class="brand" href="#top"><span class="mark" aria-hidden="true"></span><span>OrbitOS Guide</span></a>
+  <nav>
+    <a href="#tour">Tour</a>
+    <a href="#ranks">Ranks</a>
+    <a href="#routes">Tickets</a>
+    <a href="#plans">Plans</a>
+    <a href="#tips">Good to know</a>
+  </nav>
+  <button class="iconbtn" id="themeBtn" aria-label="Switch theme"><svg class="i"><use href="#i-sun"/></svg></button>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="stars" aria-hidden="true"></div>
+    <div class="wrap">
+      <span class="ver"><b>v5.8</b> Workspace guide</span>
+      <h1>Learn your way around OrbitOS.</h1>
+      <p class="lede">Twelve short tours of the workspace, from your first invite to the Vault. Watch the cursor work through each screen, pause whenever you like, and jump to the part you need.</p>
+      <div class="cta">
+        <a class="btn-l solid" href="#tour" id="startTour"><svg class="i"><use href="#i-play"/></svg>Start the tour</a>
+        <a class="btn-l ghost" href="#tips">Read the essentials</a>
+      </div>
+    </div>
+    <div class="orbitring" aria-hidden="true">
+      <svg viewBox="0 0 1100 220" preserveAspectRatio="none"><ellipse cx="550" cy="110" rx="548" ry="108" fill="none" style="stroke:rgb(var(--line)/.12)" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>
+      <span class="sat" id="sat"></span>
+    </div>
+    <div class="planet" aria-hidden="true"></div>
+  </section>
+
+  <section class="block" id="tour">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>The guided tour</h2>
+        <p>Each chapter plays by itself. Use the controls to pause, step back, or move on, or pick any chapter from the list.</p>
+      </div>
+      <div class="tour">
+        <nav class="rail" id="rail" aria-label="Chapters"></nav>
+        <div class="player">
+          <div class="stagebox" id="stagebox">
+            <div id="stage" aria-hidden="true">
+              <div class="win" id="win">
+                <div class="chrome"><i></i><i></i><i></i><span class="url" id="url">orbit-os.co.za/dashboard</span></div>
+                <div class="ahdr" id="ahdr">
+                  <span class="mark"></span>
+                  <span class="atab" data-tab="home"><i data-i="home"></i></span>
+                  <span class="atab" data-tab="folder"><i data-i="folder"></i></span>
+                  <span class="atab" data-tab="cal"><i data-i="cal"></i></span>
+                  <span class="atab" data-tab="phone"><i data-i="phone"></i></span>
+                  <span class="atab" data-tab="chat"><i data-i="chat"></i></span>
+                  <span class="atab" data-tab="users"><i data-i="users"></i></span>
+                  <span class="atab" data-tab="ticket"><i data-i="ticket"></i></span>
+                  <span class="atab" data-tab="lock"><i data-i="lock"></i></span>
+                  <span class="atab" data-tab="shield"><i data-i="shield"></i></span>
+                  <span class="atab" data-tab="gear"><i data-i="gear"></i></span>
+                  <span class="sep"></span>
+                  <span class="atab"><i data-i="bell"></i></span>
+                  <span class="av xs" data-r="owner" style="margin:0 6px 0 4px">TM</span>
+                </div>
+
+                <!-- 1. Getting started -->
+                <section class="scene s-start" data-scene="start">
+                  <div class="card auth fade pop on" data-k="signup">
+                    <span class="mark"></span>
+                    <h3>Create your workspace</h3>
+                    <p>Free for one owner and two members.</p>
+                    <div class="field"><span class="lbl">Your name</span><div class="input" data-k="name"><span class="typed"></span><span class="ph">Full name</span></div></div>
+                    <div class="field"><span class="lbl">Work email</span><div class="input" data-k="email"><span class="typed"></span><span class="ph">you@studio.co.za</span></div></div>
+                    <div class="field"><span class="lbl">Workspace name</span><div class="input" data-k="ws"><span class="typed"></span><span class="ph">Your studio</span></div></div>
+                    <button class="btn primary wide" data-k="create">Create workspace</button>
+                  </div>
+                  <div class="card auth fade pop" data-k="invite">
+                    <span class="mark"></span>
+                    <h3>Invite your team</h3>
+                    <p>Northbound Studio is ready. Add teammates by email.</p>
+                    <div class="input" data-k="inv"><span class="typed"></span><span class="ph">name@northbound.co.za</span></div>
+                    <div class="chips" data-k="chips"></div>
+                    <div class="seatrow"><span data-k="seattxt">1 of 3 seats used</span><span>Free plan</span></div>
+                    <div class="meter" style="margin-bottom:16px"><i data-k="seatfill" style="transform:scaleX(.333)"></i></div>
+                    <button class="btn primary wide" data-k="send">Send invites</button>
+                    <div class="sent fade" data-k="sent">
+                      <span class="bigok"><i data-i="check"></i></span>
+                      <h3>Invites sent</h3>
+                      <p class="muted" style="margin:0">Sipho and Anke will join from the link in their email.</p>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 2. Dashboard -->
+                <section class="scene s-dash" data-scene="dash">
+                  <div class="greet"><h3>Good morning, Thandi</h3><span class="lbl mono">Tue 15 Dec &nbsp;09:24</span></div>
+                  <div class="dgrid">
+                    <div class="dcol">
+                      <div class="card" data-k="moon">
+                        <span class="lbl">Workspace health</span>
+                        <div class="moon" style="margin-top:8px">
+                          <svg viewBox="0 0 100 100" aria-hidden="true">
+                            <defs>
+                              <radialGradient id="mg" cx="35%" cy="30%" r="80%"><stop offset="0" style="stop-color:rgb(var(--ink-strong));stop-opacity:.95"/><stop offset="1" style="stop-color:rgb(var(--muted));stop-opacity:.55"/></radialGradient>
+                              <mask id="mm"><rect width="100" height="100" fill="#fff"/><circle cx="20" cy="42" r="40" fill="#000"/></mask>
+                            </defs>
+                            <circle cx="50" cy="50" r="40" style="fill:rgb(var(--line)/.05)"/>
+                            <circle cx="50" cy="50" r="40" fill="url(#mg)" mask="url(#mm)"/>
+                            <circle cx="50" cy="50" r="46" fill="none" style="stroke:rgb(var(--amber)/.5)" stroke-dasharray="216 289" transform="rotate(-90 50 50)" stroke-width="2" stroke-linecap="round"/>
+                          </svg>
+                          <div><div class="score">75</div><span class="pill amber">Watch</span></div>
+                        </div>
+                        <div class="tip fade pop" data-k="moontip" style="left:150px;top:24px">
+                          <b>75 out of 100</b>3 overdue, 2 blocked and 18 finished this week. Clearing the overdue work moves the moon to full.
+                        </div>
+                      </div>
+                      <div class="card" style="flex:1" data-k="needs">
+                        <div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Needs you</span><span class="pill red">2 blocked</span></div>
+                        <div class="list">
+                          <div class="li" data-k="ni"><span class="av xs" data-r="exec">KN</span><div class="grow"><div>Approve motion spec</div><div class="sub">Atlas Motion</div></div></div>
+                          <div class="li" data-k="ni"><span class="av xs">LR</span><div class="grow"><div>Reply to Lerato</div><div class="sub">Meridian Website</div></div></div>
+                          <div class="li" data-k="ni"><span class="av xs" data-r="lead">SD</span><div class="grow"><div>Review UI kit audit</div><div class="sub">Northbound Rebrand</div></div></div>
+                          <div class="li" data-k="ni"><span class="av xs">AV</span><div class="grow"><div>Unblock asset export</div><div class="sub">Blocked 2 days</div></div><span class="pill red plain">Blocked</span></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dcol">
+                      <div class="card">
+                        <span class="lbl">Coming up</span>
+                        <div class="bk">
+                          <button class="bkt red" data-k="b-over"><b>02</b><span>Overdue</span></button>
+                          <button class="bkt amber sel" data-k="b-today"><b>03</b><span>Due today</span></button>
+                          <button class="bkt" data-k="b-tom"><b>01</b><span>Due tomorrow</span></button>
+                          <button class="bkt" data-k="b-week"><b>04</b><span>This week</span></button>
+                        </div>
+                        <div class="list" data-k="blist">
+                          <div class="li"><span class="pill amber plain">17:00</span><div class="grow"><div>UI kit audit</div><div class="sub">Northbound Rebrand</div></div></div>
+                          <div class="li"><span class="pill amber plain">18:30</span><div class="grow"><div>Client review pack</div><div class="sub">Meridian Website</div></div></div>
+                          <div class="li"><span class="pill amber plain">23:59</span><div class="grow"><div>Storyboard frames</div><div class="sub">Atlas Motion</div></div></div>
+                        </div>
+                      </div>
+                      <div class="card risk" style="flex:1">
+                        <span class="lbl">Projects at risk</span>
+                        <div class="list">
+                          <div class="rrow li" data-k="r-mer" style="display:block">
+                            <div style="display:flex;align-items:center;gap:8px"><b style="font-weight:600">Meridian Website</b><span class="pill red" style="margin-left:auto">At risk</span></div>
+                            <div class="fade" data-k="r-mer-x">
+                              <div class="rx"><span>2 overdue</span><span>1 blocked</span><span>40% done</span><span style="margin-left:auto">Due 22 Dec</span></div>
+                              <div class="meter" style="margin-top:7px"><i style="transform:scaleX(.4);background:rgb(var(--red))"></i></div>
+                            </div>
+                          </div>
+                          <div class="rrow li" style="display:block"><div style="display:flex;align-items:center;gap:8px"><b style="font-weight:600">Atlas Motion</b><span class="pill amber" style="margin-left:auto">Watch</span></div></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dcol">
+                      <div class="card" data-k="nextup">
+                        <span class="lbl">Next up</span>
+                        <div class="cd" data-cd>00:35:12</div>
+                        <div style="font-weight:500">Client review: Meridian</div>
+                        <div class="sub lbl" style="margin-bottom:12px">10:00, video call with 2 guests</div>
+                        <div class="week"><span class="">M<i></i></span><span class="t">T<i></i></span><span class="h">W<i></i></span><span>T<i></i></span><span>F<i></i></span><span>S<i></i></span><span>S<i></i></span></div>
+                      </div>
+                      <div class="card" style="flex:1">
+                        <span class="lbl">Team presence</span>
+                        <div style="margin-top:8px">
+                          <div class="wl" data-k="w-thandi"><span class="av xs" data-r="owner">TM<span class="dot"></span></span><div class="meter"><i class="full" style="transform:scaleX(.92)"></i></div><b>92</b></div>
+                          <div class="wl"><span class="av xs" data-r="lead">SD<span class="dot"></span></span><div class="meter"><i style="transform:scaleX(.64)"></i></div><b>64</b></div>
+                          <div class="wl"><span class="av xs">AV<span class="dot"></span></span><div class="meter"><i style="transform:scaleX(.38)"></i></div><b>38</b></div>
+                          <div class="wl"><span class="av xs" data-r="exec">KN<span class="dot off"></span></span><div class="meter"><i style="transform:scaleX(.55)"></i></div><b>55</b></div>
+                        </div>
+                        <div class="fade" data-k="w-flag" style="margin-top:8px"><span class="pill amber">Thandi is carrying 92% this week</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 3. Projects -->
+                <section class="scene s-proj" data-scene="proj">
+                  <div class="pgrid">
+                    <div class="card">
+                      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h4>Projects</h4><span class="btn" style="height:24px;padding:0 7px"><i data-i="plus"></i></span></div>
+                      <div class="prow on" data-k="p-north"><span class="pr">P1</span><div><div style="font-weight:500">Northbound Rebrand</div><div class="lbl">Northbound</div></div><span class="hdot green"></span></div>
+                      <div class="prow" data-k="p-mer"><span class="pr">P2</span><div><div style="font-weight:500">Meridian Website</div><div class="lbl">Meridian</div></div><span class="hdot red"></span></div>
+                      <div class="prow"><span class="pr">P3</span><div><div style="font-weight:500">Atlas Motion</div><div class="lbl">Atlas</div></div><span class="hdot amber"></span></div>
+                      <div class="lbl" style="margin-top:16px;padding:0 8px">3 of 3 active projects on Free</div>
+                    </div>
+                    <div class="card" style="overflow:hidden">
+                      <div class="ph"><h3 data-k="ptitle">Northbound Rebrand</h3><span data-k="phealth" class="pill green">Healthy</span><button class="btn primary" data-k="newd"><i data-i="plus"></i>New directive</button></div>
+                      <div class="tabs">
+                        <span class="tab on" data-k="t-tasks">Tasks</span><span class="tab" data-k="t-files">Files</span><span class="tab" data-k="t-cc">Command Center</span><span class="tab" data-k="t-br">Briefing Room</span><span class="tab">Calendar</span><span class="tab">Settings</span>
+                      </div>
+                      <div class="pane on" data-k="pane-tasks">
+                        <table class="tbl"><thead><tr><th>Directive</th><th>Assignees</th><th>Status</th><th>Priority</th><th>Due</th></tr></thead>
+                        <tbody data-k="rows">
+                          <tr><td>Logo lockups</td><td><span class="stack"><span class="av xs">AV</span></span></td><td><span class="pill green">Done</span></td><td>Medium</td><td class="mono">10 Dec</td></tr>
+                          <tr><td>Brand guidelines PDF</td><td><span class="stack"><span class="av xs" data-r="lead">SD</span><span class="av xs">AV</span></span></td><td><span class="pill blue">In progress</span></td><td>High</td><td class="mono">17 Dec</td></tr>
+                          <tr><td>UI kit audit</td><td><span class="stack"><span class="av xs" data-r="lead">SD</span></span></td><td><span class="pill amber">Review</span></td><td>High</td><td class="mono">15 Dec</td></tr>
+                        </tbody></table>
+                      </div>
+                      <div class="pane" data-k="pane-files">
+                        <div class="list" data-k="files">
+                          <div class="li"><span class="ficon"><i data-i="file"></i></span><div class="grow"><div>meridian-sitemap.fig</div><div class="sub">4.1 MB, Sipho</div></div></div>
+                          <div class="li"><span class="ficon"><i data-i="file"></i></span><div class="grow"><div>copy-deck-v3.docx</div><div class="sub">220 KB, Anke</div></div></div>
+                        </div>
+                      </div>
+                      <div class="pane" data-k="pane-cc">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="lbl">Live activity</span><span class="live">Live</span></div>
+                        <div class="list feed" data-k="feed"></div>
+                      </div>
+                      <div class="pane" data-k="pane-br">
+                        <div class="input" data-k="brin"><span class="typed"></span><span class="ph">Post an announcement to everyone on this project</span></div>
+                        <div data-k="posts">
+                          <div class="post"><div class="who"><span class="av xs" data-r="mgr">NK</span><b>Naledi Khumalo</b><span class="ver-badge"><i data-i="check"></i>Verified</span><span class="lbl" style="margin-left:auto">Mon</span></div>Copy deck v3 is final. Please build from this version only.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="scrim fade" data-k="dscrim"></div>
+                  <div class="modal fade pop" data-k="dmodal" style="margin-top:-170px">
+                    <h3>New directive</h3>
+                    <div class="field"><span class="lbl">Title</span><div class="input" data-k="dtitle"><span class="typed"></span><span class="ph">What needs doing?</span></div></div>
+                    <div class="field"><span class="lbl">Assignees</span><div class="chips" data-k="dassign" style="margin:0"></div></div>
+                    <div style="display:flex;gap:16px">
+                      <div class="field"><span class="lbl">Priority</span><span class="seg"><span>Low</span><span>Medium</span><span data-k="dhigh">High</span></span></div>
+                      <div class="field" style="flex:1"><span class="lbl">Due</span><div class="input" data-k="ddue"><span class="typed"></span><span class="ph">Pick a date</span></div></div>
+                    </div>
+                    <div class="mrow"><span class="btn">Cancel</span><span class="btn primary" data-k="dcreate">Create directive</span></div>
+                  </div>
+                </section>
+
+                <!-- 4. Calendar -->
+                <section class="scene s-cal" data-scene="cal">
+                  <div class="ctool">
+                    <h3>December 2026</h3>
+                    <span class="seg"><span data-k="v-day">Day</span><span class="on" data-k="v-week">Week</span><span data-k="v-month">Month</span></span>
+                    <div class="r" style="position:relative">
+                      <span class="btn" data-k="slotbtn"><i data-i="search"></i>Find a slot</span>
+                      <span class="btn" data-k="feedbtn"><i data-i="link"></i>Calendar feed</span>
+                      <span class="btn primary" data-k="newe"><i data-i="plus"></i>New engagement</span>
+                      <div class="card feedpop fade pop" data-k="feedpop">
+                        <h4>Your private calendar feed</h4>
+                        <div class="lbl">Subscribe from any calendar app. Keep the link to yourself.</div>
+                        <div class="feedlink">webcal://orbit-os.co.za/feed/u/7c2e91f4a0d3b5</div>
+                        <div style="display:flex;gap:6px"><span class="btn" data-k="fcopy"><i data-i="copy"></i><span data-k="fcopyt">Copy link</span></span><span class="btn"><i data-i="refresh"></i>Rotate</span></div>
+                        <div class="apps"><span>Google</span><span>Outlook</span><span>Apple</span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card calc">
+                    <div class="cgrid">
+                      <div class="chd"></div>
+                      <div class="chd">Mon<b>14</b></div><div class="chd today">Tue<b>15</b></div><div class="chd hol" data-k="holhd">Wed<b>16</b></div><div class="chd">Thu<b>17</b></div><div class="chd">Fri<b>18</b></div><div class="chd">Sat<b>19</b></div><div class="chd">Sun<b>20</b></div>
+                      <div class="alld hours" style="text-align:right;padding:7px 6px;font-size:9.5px">all day</div>
+                      <div class="alld"><div class="task red">Brand Identity v2, 3d late</div></div>
+                      <div class="alld"><div class="task amber">UI kit audit</div></div>
+                      <div class="alld"><div class="task violet">Day of Reconciliation</div></div>
+                      <div class="alld"></div>
+                      <div class="alld"><div class="task blue">Dev handoff</div></div>
+                      <div class="alld"></div><div class="alld"></div>
+                      <div class="hours"><div>08:00</div><div>09:00</div><div>10:00</div><div>11:00</div><div>12:00</div><div>13:00</div><div>14:00</div><div>15:00</div><div>16:00</div></div>
+                      <div class="col"><div class="ev blue" style="top:40px;height:30px"><b>Studio stand-up</b>09:00</div><div class="slot fade" data-k="slot" style="top:240px;height:40px">Free</div></div>
+                      <div class="col"><div class="nowline" style="top:57px"></div><div class="ev blue" style="top:80px;height:40px"><b>Client review</b>Meridian, 10:00</div><div class="ev blue" style="top:200px;height:60px"><b>Atlas motion review</b>13:00</div><div class="slot fade" data-k="slot" style="top:280px;height:40px">Free</div></div>
+                      <div class="col hol" data-k="holcol"><div class="tip fade pop" data-k="htip" style="top:20px;left:10px;width:200px"><b>Day of Reconciliation</b>A South African public holiday. It's shaded so you notice it, but you can still book on it.</div></div>
+                      <div class="col"><div class="ev amber" data-k="evnew" style="top:80px;height:40px;opacity:0"><b data-k="evnewt">Meridian kickoff</b><span data-k="evnews">Waiting for Lerato</span></div><div class="slot fade" data-k="slot" style="top:240px;height:40px">Free</div></div>
+                      <div class="col"><div class="ev blue" style="top:120px;height:40px"><b>Portfolio shoot</b>11:00</div><div class="slot fade" data-k="slot" style="top:40px;height:40px">Free</div></div>
+                      <div class="col wknd"></div><div class="col wknd"></div>
+                    </div>
+                  </div>
+                  <div class="scrim fade" data-k="escrim"></div>
+                  <div class="modal fade pop" data-k="emodal" style="margin-top:-150px">
+                    <h3>New engagement</h3>
+                    <div class="field"><span class="lbl">Title</span><div class="input" data-k="etitle"><span class="typed"></span><span class="ph">Meeting name</span></div></div>
+                    <div class="field"><span class="lbl">When</span><div class="input"><span>Thu 17 Dec, 10:00 to 11:00</span></div></div>
+                    <div class="field"><span class="lbl">Outside guests</span><div class="input" data-k="eguest"><span class="typed"></span><span class="ph">Add by email</span></div></div>
+                    <div class="chips" data-k="echips" style="margin:0 0 8px"></div>
+                    <div class="mrow"><span class="btn">Cancel</span><span class="btn primary" data-k="esend">Send invite</span></div>
+                  </div>
+                </section>
+
+                <!-- 5. Calls -->
+                <section class="scene s-calls" data-scene="calls">
+                  <div class="cgrid2">
+                    <div class="card contact">
+                      <span class="av lg" data-r="lead">SD<span class="dot" style="width:12px;height:12px"></span></span>
+                      <h3>Sipho Dlamini</h3>
+                      <div class="lbl">Team Lead, Design. Online now</div>
+                      <div class="callbar"><span class="callbtn go" data-k="callbtn"><i data-i="phone"></i></span><span class="callbtn"><i data-i="chat"></i></span></div>
+                    </div>
+                    <div class="card">
+                      <h4 style="margin-bottom:8px">Scheduled calls</h4>
+                      <div class="list">
+                        <div class="li"><span class="ficon"><i data-i="cal"></i></span><div class="grow"><div>Client review: Meridian</div><div class="sub">Today 10:00, 2 guests</div></div></div>
+                        <div class="li"><span class="ficon"><i data-i="cal"></i></span><div class="grow"><div>Atlas motion review</div><div class="sub">Today 13:00</div></div></div>
+                        <div class="li"><span class="ficon"><i data-i="users"></i></span><div class="grow"><div>Friday retro</div><div class="sub">Fri 15:00, whole studio</div></div></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="room fade" data-k="room">
+                    <div class="rtop"><b>Call with Sipho</b><span class="lbl mono" data-k="clock">00:00</span><span class="txb fade" data-k="txbadge">Transcribing</span></div>
+                    <div class="notices" data-k="notices"></div>
+                    <div class="tiles" data-k="tiles">
+                      <div class="tile"><span class="av lg" data-r="owner">TM</span><span class="nm">You<svg class="i"><use href="#i-mic"/></svg></span></div>
+                      <div class="tile speak"><span class="av lg" data-r="lead">SD</span><span class="nm">Sipho<svg class="i"><use href="#i-mic"/></svg></span></div>
+                    </div>
+                    <div class="rctrl">
+                      <span class="callbtn"><i data-i="mic"></i></span><span class="callbtn off"><i data-i="camoff"></i></span><span class="callbtn" data-k="addp"><i data-i="addp"></i></span><span class="callbtn" data-k="tx"><i data-i="tx"></i></span><span class="callbtn" data-k="min"><i data-i="min"></i></span><span class="callbtn"><i data-i="pip"></i></span><span class="callbtn end"><i data-i="end"></i></span>
+                    </div>
+                    <div class="ringing fade on" data-k="ring"><div class="rings"><span class="av lg" data-r="lead">SD</span></div><b>Calling Sipho</b><span class="lbl">Ringing on his laptop and phone</span></div>
+                    <div class="scrim fade" data-k="cscrim" style="inset:0;border-radius:0"></div>
+                    <div class="modal consent fade pop" data-k="consent" style="margin-top:-120px">
+                      <h3>Transcribe this call?</h3>
+                      <div class="lbl" style="margin:-6px 0 8px">It starts only if most people in the call agree.</div>
+                      <div class="vote"><span class="av xs" data-r="owner">TM</span>You<span class="v yes">Agreed</span></div>
+                      <div class="vote"><span class="av xs" data-r="lead">SD</span>Sipho<span class="v" data-k="v2">Waiting</span></div>
+                      <div class="vote"><span class="av xs">AV</span>Anke<span class="v">Waiting</span></div>
+                      <div class="seatrow" style="margin-top:10px"><span data-k="vtxt">1 of 3 agreed</span><span>Needs 2</span></div>
+                      <div class="meter"><i data-k="vfill" style="transform:scaleX(.333)"></i></div>
+                    </div>
+                  </div>
+                  <div class="mini fade" data-k="mini">
+                    <div class="mh"><span class="txb">Rec</span>Call with Sipho, Anke<span class="grip">⋮⋮</span></div>
+                    <div class="mt"><div><span class="av xs" data-r="owner">TM</span></div><div><span class="av xs" data-r="lead">SD</span></div><div><span class="av xs">AV</span></div></div>
+                    <div class="mc"><span class="callbtn"><i data-i="mic"></i></span><span class="callbtn"><i data-i="pip"></i></span><span class="callbtn end" data-k="mleave" style="background:rgb(var(--red));color:#fff;border:0"><i data-i="end"></i></span></div>
+                  </div>
+                  <div class="card fade pop" data-k="txready" style="position:absolute;left:50%;top:50%;width:340px;margin:-80px 0 0 -170px;z-index:15;box-shadow:var(--shadow-overlay)">
+                    <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><span class="ficon"><i data-i="tx"></i></span><div><h4>Transcript ready</h4><div class="lbl">Call with Sipho and Anke, 12 min</div></div></div>
+                    <div class="lbl" style="margin-bottom:12px">“…so we move the Meridian review to Thursday and Anke owns the hero animation…”</div>
+                    <div class="mrow"><span class="btn">Download</span><span class="btn primary" data-k="tovault"><i data-i="lock"></i>File in the Vault</span></div>
+                  </div>
+                </section>
+
+                <!-- 6. Messages -->
+                <section class="scene s-msg" data-scene="msg">
+                  <div class="mgrid">
+                    <div class="card" style="padding:8px">
+                      <div class="input" style="margin-bottom:6px;height:30px"><i data-i="search"></i><span class="ph" style="margin-left:6px">Search messages</span></div>
+                      <div class="conv" data-k="c-town"><span class="av md" style="background:linear-gradient(135deg,rgb(var(--amber)),rgb(var(--pink)));color:#111">NS</span><div class="grow"><div>Town Hall <i data-i="pin" style="color:rgb(var(--amber))"></i></div><div class="sub">Thandi: Year-end shutdown dates</div></div></div>
+                      <div class="conv" data-k="c-sipho"><span class="av md" data-r="lead">SD<span class="dot"></span></span><div class="grow"><div>Sipho Dlamini</div><div class="sub">Sent you the export settings</div></div><span class="badge" data-k="b-sipho">2</span></div>
+                      <div class="conv"><span class="av md" style="background:rgb(var(--pink)/.25);color:rgb(var(--pink))">DT</span><div class="grow"><div>Design team</div><div class="sub">Anke: new moodboard is up</div></div><span class="badge">5</span></div>
+                      <div class="conv on" data-k="c-anke"><span class="av md">AV<span class="dot"></span></span><div class="grow"><div>Anke Visser</div><div class="sub">You: thanks!</div></div></div>
+                      <div class="conv"><span class="av md" data-r="mgr">NK<span class="dot off"></span></span><div class="grow"><div>Naledi Khumalo</div><div class="sub">Lunch on Friday?</div></div></div>
+                    </div>
+                    <div class="card thread" data-k="thread">
+                      <div class="thead" data-k="thead"><span class="av md">AV</span><div><b>Anke Visser</b><div class="lbl">Member, Design</div></div></div>
+                      <div class="pinbar fade" data-k="pin" style="display:none"><i data-i="pin"></i><b>Pinned:</b> Studio closes 18 Dec and reopens 5 Jan.</div>
+                      <div class="msgs" data-k="msgs">
+                        <div class="bub">Moodboard is in the Northbound files.</div>
+                        <div class="bub me">thanks!</div>
+                        <div class="status read">Read</div>
+                      </div>
+                      <div class="comp">
+                        <span class="iconb"><i data-i="smile"></i></span><span class="iconb" data-k="gifbtn"><i data-i="gif"></i></span><span class="iconb"><i data-i="image"></i></span><span class="iconb"><i data-i="hash"></i></span>
+                        <div class="input" data-k="comp"><span class="typed"></span><span class="tref fade" data-k="cref" style="display:none"><i data-i="folder"></i>Homepage hero animation</span><span class="ph">Message</span></div>
+                        <span class="btn primary" data-k="sendm" style="width:34px;padding:0"><i data-i="send"></i></span>
+                        <div class="card gifbox fade pop" data-k="gifs" style="background:rgb(var(--raised))">
+                          <div class="input" style="height:28px"><i data-i="search"></i><span style="margin-left:6px">celebrate</span></div>
+                          <div class="gifgrid"><div class="g1" data-k="gif1"></div><div class="g2"></div><div class="g3"></div><div class="g4"></div><div class="g5"></div><div class="g6"></div></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 7. People / org chart -->
+                <section class="scene s-people" data-scene="people">
+                  <div class="canvas" data-k="canvas">
+                    <svg class="wires" viewBox="0 0 960 506" preserveAspectRatio="none">
+                      <path d="M485 66 V98 H285 V130"/><path d="M485 66 V98 H685 V130"/>
+                      <path d="M285 186 V250"/><path d="M685 186 V218 H585 V250"/><path d="M685 186 V218 H785 V250"/>
+                      <path class="new" data-k="newwire" d="M585 306 V380" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+                    </svg>
+                    <div class="tray"><span data-k="traytxt">Not wired yet</span></div>
+                    <div class="ghostslot fade" data-k="ghost"></div>
+                    <div class="legend fade pop" data-k="legend"><span class="gold"><i></i>Owner</span><span class="violet"><i></i>Executive</span><span class="blue"><i></i>Manager</span><span class="teal"><i></i>Team Lead</span><span><i style="background:rgb(var(--faint));box-shadow:none"></i>Member</span></div>
+                    <div class="node" data-k="n-thandi" style="left:400px;top:10px"><span class="av" data-r="owner">TM<span class="dot"></span></span><div><div class="nm">Thandi Mokoena</div><div class="rk">Owner</div></div></div>
+                    <div class="node" style="left:200px;top:130px;--dc:var(--teal);--dca:1"><span class="av" data-r="exec">KN<span class="dot off"></span></span><div><div class="nm">Kagiso Nkosi</div><div class="rk">Executive, Operations</div></div></div>
+                    <div class="node" style="left:600px;top:130px;--dc:var(--pink);--dca:1"><span class="av" data-r="mgr">NK<span class="dot"></span></span><div><div class="nm">Naledi Khumalo</div><div class="rk">Manager, Design</div></div></div>
+                    <div class="node" style="left:200px;top:250px;--dc:var(--teal);--dca:1"><span class="av">ZM<span class="dot"></span></span><div><div class="nm">Zanele Mthembu</div><div class="rk">Member, Operations</div></div></div>
+                    <div class="node" data-k="n-sipho" style="left:500px;top:250px;--dc:var(--pink);--dca:1"><span class="av" data-r="lead">SD<span class="dot"></span></span><div><div class="nm">Sipho Dlamini</div><div class="rk">Team Lead, Design</div></div></div>
+                    <div class="node" style="left:700px;top:250px;--dc:var(--pink);--dca:1"><span class="av">AV<span class="dot"></span></span><div><div class="nm">Anke Visser</div><div class="rk">Member, Design</div></div></div>
+                    <div class="node" data-k="n-lebo" style="left:20px;top:395px;--dc:var(--pink)"><span class="av">LM<span class="dot"></span></span><div><div class="nm">Lebo Mahlangu</div><div class="rk" data-k="lebork">Member, no department</div></div></div>
+                    <div class="ptool"><span class="seg"><span class="on">Chart</span><span>Tree</span></span><span class="btn" data-k="deptbtn">Departments</span></div>
+                    <div class="card sidep fade" data-k="deptp" style="background:rgb(var(--raised))"><div class="in">
+                      <h4>Departments</h4><div class="lbl" style="margin-bottom:6px">Pro plan: up to 10</div>
+                      <div class="dept pink"><i></i><div style="flex:1"><b style="font-weight:500">Design</b><div class="lbl">Lead: Naledi Khumalo</div></div><span class="lbl">4</span></div>
+                      <div class="dept teal"><i></i><div style="flex:1"><b style="font-weight:500">Operations</b><div class="lbl">Lead: Kagiso Nkosi</div></div><span class="lbl">2</span></div>
+                      <div class="dept gold"><i></i><div style="flex:1"><b style="font-weight:500">Finance</b><div class="lbl">No lead yet</div></div><span class="lbl">0</span></div>
+                      <div class="lbl" style="margin-top:12px">Pick a colour</div>
+                      <div class="swatches" data-k="sw"></div>
+                    </div></div>
+                    <div class="card sidep fade" data-k="profile" style="background:rgb(var(--raised))">
+                      <div class="pbanner"></div>
+                      <div class="in" style="margin-top:-36px">
+                        <span class="av lg" data-r="lead" style="box-shadow:0 0 0 3px rgb(var(--raised)),0 0 0 5px rgb(var(--teal)),0 0 18px rgb(var(--teal)/.5)">SD<span class="dot" style="width:12px;height:12px"></span></span>
+                        <h3 style="margin-top:10px">Sipho Dlamini</h3>
+                        <span class="pill teal">Team Lead</span>
+                        <dl class="pinfo"><dt>Department</dt><dd>Design</dd><dt>Reports to</dt><dd>Naledi Khumalo</dd><dt>Leads</dt><dd>Lebo Mahlangu</dd><dt>Status</dt><dd style="color:rgb(var(--green))">Online</dd></dl>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 8. Admin tools -->
+                <section class="scene s-admin" data-scene="admin">
+                  <div class="card gate fade on" data-k="gate">
+                    <div class="lock"><i data-i="shield"></i></div>
+                    <h3>Admin Tools</h3>
+                    <p>Enter your admin passcode. It's separate from your account password.</p>
+                    <div class="pdots" data-k="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                    <a>Forgot it? Reset by email</a>
+                  </div>
+                  <div class="agrid fade" data-k="panel">
+                    <div class="card snav">
+                      <div class="on" data-k="an-ranks"><i data-i="users"></i>Ranks</div><div><i data-i="shield"></i>Owners</div><div><i data-i="folder"></i>Departments</div><div><i data-i="swap"></i>Org chart</div><div data-k="an-q"><i data-i="ticket"></i>Ticket queue</div>
+                    </div>
+                    <div class="card" style="overflow:hidden">
+                      <div data-k="ap-ranks">
+                        <div class="imcard" data-k="im">
+                          <div class="stack"><span class="av md" data-r="owner">TM</span><span class="av md" data-r="exec">KN</span></div>
+                          <div style="flex:1"><b>Internal Management</b><div class="lbl">2 of 2 seats used on Pro. Runs Admin Tools and the full ticket queue.</div></div>
+                          <span class="pill amber plain">2 / 2</span>
+                          <div class="tip fade pop" data-k="imtip" style="right:10px;top:58px">Any rank can hold an Internal Management seat. Free and Standard include 1 seat, Pro 2, Custom 3 or more.</div>
+                        </div>
+                        <h4 style="margin:4px 0 6px">Ranks</h4>
+                        <div class="list">
+                          <div class="li"><span class="av xs" data-r="owner">TM</span><div class="grow"><div>Thandi Mokoena</div></div><span class="rkbtn gold"><i></i>Owner</span></div>
+                          <div class="li"><span class="av xs" data-r="exec">KN</span><div class="grow"><div>Kagiso Nkosi</div></div><span class="rkbtn violet"><i></i>Executive</span></div>
+                          <div class="li"><span class="av xs" data-r="mgr">NK</span><div class="grow"><div>Naledi Khumalo</div></div><span class="rkbtn blue"><i></i>Manager</span></div>
+                          <div class="li"><span class="av xs" data-r="lead" data-k="sav">SD</span><div class="grow"><div>Sipho Dlamini</div></div><span class="rkbtn teal" data-k="rk-sipho"><i></i><span data-k="rkt">Team Lead</span></span></div>
+                          <div class="li"><span class="av xs">AV</span><div class="grow"><div>Anke Visser</div></div><span class="rkbtn"><i style="background:rgb(var(--faint));box-shadow:none"></i>Member</span></div>
+                        </div>
+                        <div class="card rkmenu fade pop" data-k="rkmenu" style="top:250px;background:rgb(var(--raised))">
+                          <div><i></i>Member</div><div class="teal"><i></i>Team Lead</div><div class="blue" data-k="opt-mgr"><i></i>Manager</div><div class="violet"><i></i>Executive</div>
+                        </div>
+                      </div>
+                      <div data-k="ap-q" style="display:none">
+                        <h4 style="margin-bottom:8px">Ticket queue <span class="lbl" style="font-weight:400">Every ticket, at every step</span></h4>
+                        <div data-k="qrows"></div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 9. Tickets -->
+                <section class="scene s-tix" data-scene="tix">
+                  <div class="card ladder">
+                    <div style="display:flex;justify-content:space-between"><h4>Where it goes</h4><span class="lbl" data-k="ladtxt">Raise a ticket to see its route</span></div>
+                    <div class="lad">
+                      <div class="track"></div>
+                      <div class="stepn" style="left:10%"><span class="av" data-r="lead">SD</span>Team Lead<small>Sipho</small></div>
+                      <div class="stepn" style="left:30%"><span class="av" data-r="mgr">NK</span>Manager<small>Naledi</small></div>
+                      <div class="stepn" style="left:50%"><span class="av" data-r="exec">KN</span>Executive<small>Kagiso</small></div>
+                      <div class="stepn" style="left:70%"><span class="av" data-r="owner">TM</span>Owner<small>Thandi</small></div>
+                      <div class="stepn" style="left:90%"><span class="av im"><svg class="i"><use href="#i-shield"/></svg></span>Internal Mgmt<small>2 people</small></div>
+                      <span class="token amber fade" data-k="token" style="left:10%"></span>
+                      <span class="token violet fade" data-k="token2" style="left:10%"></span>
+                    </div>
+                  </div>
+                  <div class="card" style="margin-top:12px;height:304px">
+                    <div style="display:flex;align-items:center;margin-bottom:6px"><h4>My tickets</h4><span class="btn primary" style="margin-left:auto" data-k="raise"><i data-i="plus"></i>Raise ticket</span></div>
+                    <div data-k="tlist">
+                      <div class="trow" data-k="row-acc"><span class="pill violet">Access request</span><div>Vault access for Lebo</div><span class="lbl">With Internal Management</span><span class="pill plain">Open</span></div>
+                      <div class="trow"><span class="pill teal">Onboarding</span><div>Lebo Mahlangu, starts 4 Jan</div><span class="lbl">Applied by Kagiso</span><span class="pill green">Done</span></div>
+                    </div>
+                  </div>
+                  <div class="scrim fade" data-k="tscrim"></div>
+                  <div class="modal fade pop" data-k="tmodal" style="width:440px;margin-left:-220px;margin-top:-190px">
+                    <h3>Raise a ticket</h3>
+                    <div class="ttypes">
+                      <div class="ttype" data-k="ty-issue"><b>Issue</b><small>Anyone. Climbs the org chart</small></div>
+                      <div class="ttype"><b>Access request</b><small>Anyone. A rank, the Vault, a tool</small></div>
+                      <div class="ttype"><b>Onboarding</b><small>Owners and Executives</small></div>
+                      <div class="ttype"><b>Internal move</b><small>Owners and Executives</small></div>
+                      <div class="ttype" style="grid-column:1/-1"><b>Offboarding</b><small>Owners and Executives</small></div>
+                    </div>
+                    <div class="field"><span class="lbl">What's wrong?</span><div class="input" data-k="tsub"><span class="typed"></span><span class="ph">Describe the problem</span></div></div>
+                    <div class="mrow"><span class="btn">Cancel</span><span class="btn primary" data-k="tsubmit">Raise ticket</span></div>
+                  </div>
+                </section>
+
+                <!-- 10. Vault -->
+                <section class="scene s-vault" data-scene="vault">
+                  <div class="card gate fade on" data-k="gate">
+                    <div class="lock"><i data-i="lock"></i></div>
+                    <h3>The Vault</h3>
+                    <p>Company records. Enter the Vault passcode to open the shelf.</p>
+                    <div class="pdots" data-k="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                    <a>Forgot it? Reset by email</a>
+                  </div>
+                  <div class="card fade" data-k="shelf" style="position:absolute;inset:0">
+                    <div style="display:flex;align-items:center;margin-bottom:10px"><h3>The Vault</h3><span class="lbl" style="margin-left:10px">40 MB of 100 MB, 24 of 25 documents</span><span class="btn primary" data-k="vup" style="margin-left:auto"><i data-i="up"></i>Upload</span></div>
+                    <div class="cats" data-k="cats">
+                      <span class="cat on" data-c="all">All<b>24</b></span><span class="cat" data-c="reg">Registration<b>3</b></span><span class="cat" data-c="fin">Finance<b>6</b></span><span class="cat" data-c="tax">Tax<b>4</b></span><span class="cat" data-c="hr" data-k="cat-hr">HR<b>5</b></span><span class="cat" data-c="legal">Legal<b>2</b></span><span class="cat">Insurance<b>1</b></span><span class="cat">Policies<b>3</b></span><span class="cat">Other<b>2</b></span>
+                    </div>
+                    <div data-k="docs">
+                      <div class="drow" data-c="reg"><span class="ficon"><i data-i="file"></i></span><div>CIPC registration certificate.pdf</div><span class="lbl">Registration</span><span class="pill plain">Internal</span><span class="ficon" data-k="dots-cipc" style="background:none"><i data-i="more"></i></span></div>
+                      <div class="drow" data-c="hr"><span class="ficon"><i data-i="file"></i></span><div>Employment contract, Sipho.pdf</div><span class="lbl">HR</span><span class="pill red"><svg class="i" style="width:10px;height:10px"><use href="#i-lock"/></svg>Restricted</span><span class="ficon" style="background:none"><i data-i="more"></i></span></div>
+                      <div class="drow" data-c="tax"><span class="ficon"><i data-i="file"></i></span><div>Tax clearance 2026.pdf</div><span class="lbl">Tax</span><span class="pill plain">Internal</span><span class="ficon" style="background:none"><i data-i="more"></i></span></div>
+                      <div class="drow" data-c="hr"><span class="ficon"><i data-i="file"></i></span><div>Leave policy.pdf</div><span class="lbl">HR</span><span class="pill plain">Internal</span><span class="ficon" style="background:none"><i data-i="more"></i></span></div>
+                      <div class="drow" data-c="fin"><span class="ficon"><i data-i="file"></i></span><div>Bank statement, Oct.pdf</div><span class="lbl">Finance</span><span class="pill red"><svg class="i" style="width:10px;height:10px"><use href="#i-lock"/></svg>Restricted</span><span class="ficon" style="background:none"><i data-i="more"></i></span></div>
+                      <div class="drow" data-c="other"><span class="ficon"><i data-i="tx"></i></span><div>Transcript: call with Sipho and Anke</div><span class="lbl">Other</span><span class="pill plain">Internal</span><span class="ficon" style="background:none"><i data-i="more"></i></span></div>
+                    </div>
+                    <div class="card vmenu fade pop" data-k="vmenu" style="top:150px;background:rgb(var(--raised))">
+                      <div><i data-i="down"></i>Download</div><div><i data-i="swap"></i>Re-file</div><div class="del"><i data-i="trash"></i>Delete</div>
+                    </div>
+                  </div>
+                  <div class="scrim fade" data-k="vscrim"></div>
+                  <div class="modal fade pop" data-k="vmodal" style="margin-top:-150px">
+                    <h3>Upload to the Vault</h3>
+                    <div class="li" style="background:rgb(var(--control));margin-bottom:12px"><span class="ficon"><i data-i="file"></i></span><div class="grow"><div>Payroll, Nov 2026.pdf</div><div class="sub">184 KB</div></div></div>
+                    <div class="field"><span class="lbl">Category</span><div class="input">Finance</div></div>
+                    <div class="field"><span class="lbl">Clearance</span><span class="seg"><span class="on" data-k="clr-i">Internal</span><span data-k="clr-r">Restricted</span></span></div>
+                    <div class="lbl" data-k="clrnote" style="margin:-2px 0 10px">Everyone in the workspace can see Internal documents.</div>
+                    <div class="mrow"><span class="btn">Cancel</span><span class="btn primary" data-k="vupload">Upload</span></div>
+                  </div>
+                </section>
+
+                <!-- 11. Billing -->
+                <section class="scene s-bill" data-scene="bill"></section>
+                <!-- 12. Settings -->
+                <section class="scene s-set" data-scene="set"></section>
+
+                <div class="wtoast fade" id="wtoast"><span class="ok"><svg class="i"><use href="#i-check"/></svg></span><span id="wtoastT"></span></div>
+              </div>
+              <span id="ripple"></span>
+              <span id="cursor"><svg viewBox="0 0 24 24"><path d="M4 2.5l15 10.2-6.6 1.3 3.8 7.2-2.9 1.5-3.8-7.3L4.8 20z" fill="#fff" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+          <div class="cap" aria-live="polite">
+            <div class="meta"><span id="capCh"></span><span id="capN"></span></div>
+            <div><h3 id="capT"></h3><p id="capD"></p></div>
+            <div class="ctrl">
+              <button id="prev" aria-label="Previous step"><svg class="i"><use href="#i-prev"/></svg></button>
+              <button id="play" class="play" aria-label="Pause"><svg class="i"><use href="#i-pause"/></svg></button>
+              <button id="next" aria-label="Next step"><svg class="i"><use href="#i-next"/></svg></button>
+            </div>
+            <div class="dots" id="dots"></div>
+          </div>
+          <div class="hint"><kbd>←</kbd> <kbd>→</kbd> to step, <kbd>Space</kbd> to pause or play</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="ranks">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Ranks and halos</h2>
+        <p>Everyone in a workspace has a rank. You can tell it at a glance from the coloured halo around their photo, on the org chart, in calls and in messages.</p>
+      </div>
+      <div class="ranks">
+        <div class="rank"><span class="av" data-r="owner">TM</span><h3>Owner</h3><p>Runs the workspace. Sees Restricted Vault documents and raises onboarding, move and offboarding tickets.</p></div>
+        <div class="rank"><span class="av" data-r="exec">KN</span><h3>Executive</h3><p>Has the same powers as an Owner. Pro allows up to three.</p></div>
+        <div class="rank"><span class="av" data-r="mgr">NK</span><h3>Manager</h3><p>Can bring outside guests into calls and meetings, and appoint Team Leads.</p></div>
+        <div class="rank"><span class="av" data-r="lead">SD</span><h3>Team Lead</h3><p>Leads a group. The first stop when someone escalates an Issue ticket.</p></div>
+        <div class="rank"><span class="av" data-r="member">AV</span><h3>Member</h3><p>Works on projects, chats, joins calls and raises Issue and Access tickets.</p></div>
+      </div>
+      <div class="imnote"><b>Internal Management sits outside the ranks.</b> It's the small group (one to three seats, depending on plan) who hold the Admin Tools passcode, set ranks, wire the org chart and work the full ticket queue. Any rank can hold a seat.</div>
+    </div>
+  </section>
+
+  <section class="block" id="routes">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Where a ticket goes</h2>
+        <p>Every request shares one queue at /tickets. Issues climb the org chart one step at a time. Everything else goes straight to Internal Management.</p>
+      </div>
+      <div class="flow">
+        <div class="panel">
+          <h3>An Issue, escalated</h3>
+          <p>Each escalation moves it one level up. Internal Management can see it at every step and step in at any time.</p>
+          <ul class="climb">
+            <li><span class="av" data-r="lead">TL</span><div>Team Lead<small>First person to look at it</small></div></li>
+            <li><span class="av" data-r="mgr">M</span><div>Manager</div></li>
+            <li><span class="av" data-r="exec">E</span><div>Executive</div></li>
+            <li><span class="av" data-r="owner">O</span><div>The department's Owner</div></li>
+            <li><span class="av" style="background:rgb(var(--amber)/.18);color:rgb(var(--amber))"><svg class="i"><use href="#i-shield"/></svg></span><div>Internal Management<small>The last stop</small></div></li>
+          </ul>
+        </div>
+        <div class="tblwrap">
+          <table class="ref">
+            <thead><tr><th>Type</th><th>Who can raise it</th><th>Goes to</th></tr></thead>
+            <tbody>
+              <tr><td>Issue</td><td>Anyone</td><td>Up the org chart, one step per escalation</td></tr>
+              <tr><td>Access request</td><td>Anyone</td><td>Internal Management</td></tr>
+              <tr><td>Onboarding</td><td>Owners and Executives</td><td>Internal Management, who apply it</td></tr>
+              <tr><td>Internal move</td><td>Owners and Executives</td><td>Internal Management</td></tr>
+              <tr><td>Offboarding</td><td>Owners and Executives</td><td>Internal Management</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="plans">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>What each plan includes</h2>
+        <p>Prices are in rand, per workspace per month, excluding VAT. A limit never removes anything you already have. It only stops you adding more, and the message tells you which limit you reached.</p>
+      </div>
+      <div class="tblwrap">
+        <table class="ref">
+          <thead><tr><th></th><th>Free</th><th>Standard</th><th class="pro">Pro</th><th>Custom</th></tr></thead>
+          <tbody>
+            <tr><td>Monthly price</td><td><span class="price">R0</span></td><td><span class="price">R299</span></td><td class="pro"><span class="price">R699</span></td><td>Talk to sales</td></tr>
+            <tr><td>Owners</td><td>1</td><td>1</td><td class="pro">3</td><td>5</td></tr>
+            <tr><td>Members (not counting owners)</td><td>2</td><td>5</td><td class="pro">15</td><td>By agreement</td></tr>
+            <tr><td>Active projects</td><td>3</td><td>5</td><td class="pro">25</td><td>By agreement</td></tr>
+            <tr><td>People per call</td><td>2</td><td>4</td><td class="pro">10</td><td>Up to the ceiling</td></tr>
+            <tr><td>Outside guests per call</td><td>None</td><td>None</td><td class="pro">5</td><td>By agreement</td></tr>
+            <tr><td>Guests per meeting invite</td><td>None</td><td>3</td><td class="pro">10</td><td>By agreement</td></tr>
+            <tr><td>Transcripts per month</td><td>None</td><td>20</td><td class="pro">100</td><td>Up to the ceiling</td></tr>
+            <tr><td>Vault storage</td><td>100 MB, 25 docs</td><td>1 GB, 200 docs</td><td class="pro">5 GB, 1,000 docs</td><td>Up to the ceiling</td></tr>
+            <tr><td>Chat images per month</td><td>100</td><td>1,000</td><td class="pro">3,000</td><td>Up to the ceiling</td></tr>
+            <tr><td>Departments</td><td>None</td><td>None</td><td class="pro">10</td><td>By agreement</td></tr>
+            <tr><td>Managers / Executives</td><td>None</td><td>Any / none</td><td class="pro">Any / 3</td><td>By agreement</td></tr>
+            <tr><td>Internal Management seats</td><td>1</td><td>1</td><td class="pro">2</td><td>3, more on request</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="font-size:13.5px;margin-top:14px">Self-serve checkout is paused while a payment gateway is chosen. To upgrade, go to Settings, then Billing, and tap Request upgrade. The team will move your workspace across and invoice you.</p>
+    </div>
+  </section>
+
+  <section class="block" id="tips">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Good to know</h2>
+        <p>The behaviours people ask about most, in one place.</p>
+      </div>
+      <div class="tips">
+        <div><h3>Reminders arrive the day before</h3><p>Everyone assigned to a directive gets an email 24 hours before it's due, sent at 09:00 South African time.</p></div>
+        <div><h3>Transcripts need a majority</h3><p>A call is transcribed only if more than half the people in it agree, so in a two-person call both must say yes. Speech is captured in each person's own browser.</p></div>
+        <div><h3>The Vault locks itself again</h3><p>The passcode gate comes back every time the page loads. Wrong attempts are limited, and you can reset the passcode by email.</p></div>
+        <div><h3>Restricted means restricted</h3><p>Restricted documents are visible only to owners and whoever uploaded them. They never reach anyone else's browser.</p></div>
+        <div><h3>Your calendar, anywhere</h3><p>Subscribe to your private feed from Google, Outlook or Apple Calendar. If the link is ever shared by mistake, rotate it in Settings and the old one stops working.</p></div>
+        <div><h3>Guests don't need an account</h3><p>On paid plans, clients join calls from an invite link and answer meeting invites from a signed RSVP link. You're told as soon as they reply.</p></div>
+        <div><h3>Email problems show up on the dashboard</h3><p>If invites or reminders stop being delivered, owners see a banner on the dashboard instead of the problem staying hidden.</p></div>
+        <div><h3>Lost a device?</h3><p>Settings, then Security, has Sign out everywhere. It ends every session on every device at once.</p></div>
+        <div><h3>Install it on your phone</h3><p>Use Add to Home Screen in your browser. Calendar, messages and the team tree have layouts made for small screens, and calls ring with push notifications.</p></div>
+        <div><h3>Light, dark or system</h3><p>Pick a theme in Settings. If your device asks for less motion or less transparency, OrbitOS follows it: animations calm down and glass panels turn solid.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><span class="mark" style="display:inline-block;vertical-align:-3px;margin-right:8px"></span>OrbitOS. Calm control.</span>
+    <span>Guide for v5.8. <a href="https://www.orbit-os.co.za/dashboard">Open your workspace</a></span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HAS_GSAP=!!window.gsap;
+if(!HAS_GSAP){ // tiny fallback so the guide still works without the CDN
+  const noop={kill(){},then(f){f&&f();return this}};
+  window.gsap={set(t,v){apply(t,v);return noop},to(t,v){apply(t,v);v.onComplete&&v.onComplete();return noop},fromTo(t,a,b){apply(t,b);return noop},from(){return noop},delayedCall(d,f){const id=setTimeout(f,d*1000);return{kill(){clearTimeout(id)}}},killTweensOf(){}};
+  function apply(t,v){(t instanceof Element?[t]:Array.isArray(t)||t instanceof NodeList?[...t]:t?[t]:[]).forEach(el=>{if(!el||!el.style)return;
+    if('opacity' in v)el.style.opacity=v.opacity;if('autoAlpha' in v){el.style.opacity=v.autoAlpha;el.style.visibility=v.autoAlpha?'visible':'hidden'}
+    const x=v.x||0,y=v.y||0,s=v.scale!=null?v.scale:1,sx=v.scaleX!=null?v.scaleX:null;
+    if('x' in v||'y' in v||'scale' in v)el.style.transform=`translate(${x}px,${y}px) scale(${s})`;
+    if(sx!=null)el.style.transform=`scaleX(${sx})`;
+    if('strokeDashoffset' in v)el.style.strokeDashoffset=v.strokeDashoffset;})}
+}
+
+/* ---------- theme ---------- */
+const root=document.documentElement, themeBtn=$('#themeBtn');
+function syncThemeIcon(){themeBtn.querySelector('use').setAttribute('href',root.dataset.theme==='light'?'#i-moon':'#i-sun')}
+themeBtn.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('orbit-guide-theme',root.dataset.theme)}catch(e){};syncThemeIcon()});
+syncThemeIcon();
+const isLight=()=>root.dataset.theme==='light';
+
+/* ---------- icons ---------- */
+const ico=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
+function inflate(scope){$$('i[data-i]',scope).forEach(el=>{el.outerHTML=ico(el.dataset.i)})}
+
+/* ---------- settings scenes (billing + settings share one layout) ---------- */
+function settingsHTML(active){
+  const nav=[['gen','General','gear'],['ws','Workspace','home'],['bill','Billing','file'],['not','Notifications','bell'],['dev','Devices','phone'],['feed','Calendar feed','cal'],['sec','Security','shield']];
+  return `<div class="agrid">
+  <div class="card snav">${nav.map(([k,l,i])=>`<div data-k="sn-${k}" class="${k===active?'on':''}">${ico(i)}${l}</div>`).join('')}</div>
+  <div class="card sp" style="overflow:hidden">
+    <div class="pane ${active==='bill'?'on':''}" data-k="sp-bill">
+      <div style="display:flex;align-items:center;gap:10px"><h3>Billing</h3><span class="pill plain">Free, R0 a month</span><span class="btn primary" data-k="requp" style="margin-left:auto">${ico('arrowup')}<span data-k="requpt">Request upgrade</span></span></div>
+      <p>What this workspace is using right now.</p>
+      <div class="mrow2"><span>Members</span><div class="meter"><i class="full" data-k="mf" style="transform:scaleX(1)"></i></div><b data-k="m-mem">2 of 2</b></div>
+      <div class="mrow2"><span>Active projects</span><div class="meter"><i class="full" data-k="mf" style="transform:scaleX(1)"></i></div><b>3 of 3</b></div>
+      <div class="mrow2"><span>Vault storage</span><div class="meter"><i data-k="mf" style="transform:scaleX(.4)"></i></div><b>40 / 100 MB</b></div>
+      <div class="mrow2"><span>Chat images</span><div class="meter"><i data-k="mf" style="transform:scaleX(.38)"></i></div><b>38 of 100</b></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:4px"><span class="btn" data-k="minv">${ico('addp')}Invite a member</span></div>
+      <div class="limitmsg fade" data-k="limitmsg">${ico('alert')}<div><b>You've reached the Free plan's limit of 2 members.</b> Nobody is removed. Upgrade to invite more people.</div></div>
+      <div class="plans" data-k="plans">
+        <div class="plan cur"><b>Free</b><div class="pr">R0</div><small>1 owner, 2 members<br>3 projects, 2 per call</small></div>
+        <div class="plan"><b>Standard</b><div class="pr">R299</div><small>5 members, 5 projects<br>4 per call, 20 transcripts</small></div>
+        <div class="plan" data-k="pl-pro"><b>Pro</b><div class="pr">R699</div><small>15 members, 25 projects<br>5 guests per call, departments</small></div>
+        <div class="plan"><b>Custom</b><div class="pr" style="font-size:13px;padding:3px 0">Talk to sales</div><small>16 or more people<br>More admin seats</small></div>
+      </div>
+    </div>
+    <div class="pane ${active==='gen'?'on':''}" data-k="sp-gen">
+      <h3>General</h3><p>How OrbitOS looks and behaves for you.</p>
+      <span class="lbl">Theme</span>
+      <div class="themes"><div class="thm" data-k="th-light"><div class="tl"></div>Light</div><div class="thm on" data-k="th-dark"><div class="td"></div>Dark</div><div class="thm" data-k="th-sys"><div class="ts"></div>System</div></div>
+      <div class="tgl"><div>24-hour clock<small>Times show as 14:00, never 2 PM</small></div><span class="sw"></span></div>
+      <div class="tgl"><div>Follow my device for reduced motion<small>Calmer animations when your system asks</small></div><span class="sw"></span></div>
+    </div>
+    <div class="pane ${active==='not'?'on':''}" data-k="sp-not">
+      <h3>Notifications</h3><p>Choose what reaches you, and how.</p>
+      <div class="tgl"><div>Message chime<small>A soft sound when a message arrives, wherever you are in the app</small></div><span class="sw" data-k="tg-chime"></span></div>
+      <div class="tgl"><div>Call ringtone<small>Rings when someone calls you</small></div><span class="sw"></span></div>
+      <div class="tgl"><div>Desktop notifications<small>For calls and messages while OrbitOS is in another tab</small></div><span class="sw"></span></div>
+      <div class="tgl"><div>Push on this phone<small>Calls and messages when the app is closed</small></div><span class="sw"></span></div>
+      <div class="tgl"><div>Email reminders<small>24 hours before a directive is due, at 09:00</small></div><span class="sw"></span></div>
+    </div>
+    <div class="pane ${active==='feed'?'on':''}" data-k="sp-feed">
+      <h3>Calendar feed</h3><p>Every meeting you're invited to and every task assigned to you, in your own calendar app.</p>
+      <div class="feedlink" data-k="flink" style="font-size:11.5px;padding:10px 12px">webcal://orbit-os.co.za/feed/u/7c2e91f4a0d3b5</div>
+      <div style="display:flex;gap:6px"><span class="btn">${ico('copy')}Copy link</span><span class="btn" data-k="rot">${ico('refresh')}Rotate link</span></div>
+      <div class="lbl fade" data-k="rotnote" style="margin-top:10px;color:rgb(var(--amber))">New link created. The old one has stopped working, so update it in your calendar app.</div>
+      <div class="apps" style="margin-top:14px"><span>Google Calendar</span><span>Outlook</span><span>Apple Calendar</span></div>
+    </div>
+    <div class="pane ${active==='sec'?'on':''}" data-k="sp-sec">
+      <div style="display:flex;align-items:center"><div><h3>Security</h3><p style="margin:2px 0 10px">Where you're signed in.</p></div><span class="btn danger" data-k="soe" style="margin-left:auto">${ico('logout')}Sign out everywhere</span></div>
+      <div class="sess" data-k="ss"><span class="ficon">${ico('home')}</span><div>Chrome on Windows<div class="lbl">Johannesburg, this device</div></div><span class="pill green">Active</span></div>
+      <div class="sess" data-k="ss"><span class="ficon">${ico('phone')}</span><div>Safari on iPhone<div class="lbl">Johannesburg, 2 hours ago</div></div><span class="pill plain">Signed in</span></div>
+      <div class="sess" data-k="ss"><span class="ficon">${ico('home')}</span><div>Edge on Windows<div class="lbl">Cape Town, 3 days ago</div></div><span class="pill plain">Signed in</span></div>
+      <div class="lbl" style="margin-top:12px">Sessions are kept in secure cookies. Signing out everywhere ends all of them at once, including this one.</div>
+    </div>
+  </div></div>`;
+}
+$('[data-scene=bill]').innerHTML=settingsHTML('bill');
+$('[data-scene=set]').innerHTML=settingsHTML('not');
+$('[data-scene=set] [data-k=sn-not]').classList.remove('on');
+$('[data-scene=set] [data-k=sp-not]').classList.remove('on');
+$('[data-scene=set] [data-k=sn-sec]').classList.add('on');
+$('[data-scene=set] [data-k=sp-sec]').classList.add('on');
+// department swatches (22 colours)
+(function(){const sw=$('[data-scene=people] [data-k=sw]');const hues=[0,15,28,40,52,75,95,120,145,165,180,195,210,225,240,258,272,288,302,318,334,348];sw.innerHTML=hues.map((h,i)=>`<i style="background:hsl(${h} 70% ${i%2?58:64}%)"></i>`).join('')})();
+inflate(document);
+
+/* ---------- stage + engine ---------- */
+const stage=$('#stage'), box=$('#stagebox'), win=$('#win'), cur=$('#cursor'), rip=$('#ripple'), toastEl=$('#wtoast');
+const W=1000,H=620; let scale=1;
+function fit(){scale=box.clientWidth/W;stage.style.transform=`scale(${scale})`;box.style.height=(H*scale)+'px'}
+new ResizeObserver(fit).observe(box); fit();
+
+const scenes={}, orig={};
+$$('.scene',stage).forEach(s=>{scenes[s.dataset.scene]=s;orig[s.dataset.scene]=s.innerHTML});
+
+let pending=[], runId=0, ci=0, si=0, playing=false, holdTimer=null, progT=null, started=false;
+const track=t=>{pending.push(t);return t};
+function killAll(){pending.forEach(t=>t&&t.kill&&t.kill());pending=[];clearTimeout(holdTimer);progT&&progT.kill&&progT.kill();gsap.killTweensOf(cur);gsap.killTweensOf(rip)}
+const frame=()=>new Promise(r=>requestAnimationFrame(()=>r()));
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+function pt(el){const r=el.getBoundingClientRect(), s=stage.getBoundingClientRect();return{x:(r.left-s.left+r.width/2)/scale,y:(r.top-s.top+r.height/2)/scale}}
+function cursorTween(el,dur){const p=pt(el);return gsap.to(cur,{x:p.x-3,y:p.y-3,duration:dur,ease:'power3.inOut'})}
+function placeCursor(el){const p=pt(el);gsap.set(cur,{x:p.x-3,y:p.y-3})}
+function ripple(){
+  if(RM)return;
+  const x=gsap.getProperty?gsap.getProperty(cur,'x'):0, y=gsap.getProperty?gsap.getProperty(cur,'y'):0;
+  gsap.set(rip,{x:x+3,y:y+3});
+  track(gsap.fromTo(rip,{scale:.3,opacity:.9},{scale:1.5,opacity:0,duration:.55,ease:'expo.out'}));
+  track(gsap.fromTo(cur,{scale:.84},{scale:1,duration:.35,ease:'power2.out'}));
+}
+function showToast(text,instant){
+  $('#wtoastT').textContent=text;toastEl.classList.add('on');
+  if(!instant) track(gsap.delayedCall(2.6,()=>toastEl.classList.remove('on')));
+  else toastEl.classList.remove('on');
+}
+
+function makeCtx(scene,instant){
+  const q=k=>typeof k==='string'?scene.querySelector(`[data-k="${k}"]`):k;
+  const strip=v=>{const o=Object.assign({},v);['duration','delay','ease','stagger','repeat','yoyo','onComplete'].forEach(k=>delete o[k]);return o};
+  const c={scene,instant,t:0,q,
+    qa:k=>[...scene.querySelectorAll(`[data-k="${k}"]`)],
+    end(x){if(x>c.t)c.t=x;return x},
+    to(el,v){el=q(el);if(!el)return;c.end((v.delay||0)+(v.duration==null?.5:v.duration));return instant?gsap.set(el,strip(v)):track(gsap.to(el,v))},
+    fromTo(el,a,b){el=q(el);if(!el)return;c.end((b.delay||0)+(b.duration==null?.5:b.duration));return instant?gsap.set(el,strip(b)):track(gsap.fromTo(el,a,b))},
+    from(el,v){el=q(el);if(!el||instant)return;c.end((v.delay||0)+(v.duration==null?.5:v.duration)+(v.stagger&&el.length?v.stagger*el.length:0));track(gsap.from(el,v))},
+    at(d,fn){c.end(d);if(instant)fn();else track(gsap.delayedCall(d,fn))},
+    on(el,v=true){el=q(el);el&&el.classList.toggle('on',v)},
+    cls(el,name,v=true){el=q(el);el&&el.classList.toggle(name,v)},
+    text(el,t){el=q(el);if(el)el.textContent=t},
+    type(el,text,d=0,cps=26){
+      el=q(el);const tgt=el.querySelector('.typed')||el;const dur=text.length/cps;
+      if(instant){tgt.textContent=text;return d+dur}
+      c.end(d+dur);
+      track(gsap.delayedCall(d,()=>{el.classList.add('focus');const o={n:0};track(gsap.to(o,{n:text.length,duration:dur,ease:'none',onUpdate(){tgt.textContent=text.slice(0,Math.round(o.n))},onComplete(){el.classList.remove('focus')}}))}));
+      return d+dur;
+    },
+    pop(el){el=q(el);if(!instant&&el)track(gsap.fromTo(el,{opacity:0,scale:.9,y:6},{opacity:1,scale:1,y:0,duration:.5,ease:'expo.out',clearProps:'transform,opacity'}))},
+    add(parent,html,prepend){const t=document.createElement('template');t.innerHTML=html.trim();const el=t.content.firstElementChild;inflate(t.content);const p=q(parent);const node=t.content.firstElementChild;p[prepend?'prepend':'append'](node);c.pop(node);return node},
+    move(el,dur=.6){el=q(el);if(!el)return;if(instant)return;track(cursorTween(el,dur))},
+    click(d,el,fn){ // cursor travels to el at time d, presses, then fn
+      c.at(d,()=>c.move(el,.55));
+      c.at(d+.6,()=>{if(!instant)ripple();fn&&fn()});
+      return d+.6;
+    },
+    drag(el,dx,dy,d=0,dur=1){
+      el=q(el);c.end(d+dur);
+      if(instant){gsap.set(el,{x:'+='+dx,y:'+='+dy});return}
+      track(gsap.to(el,{x:'+='+dx,y:'+='+dy,duration:dur,delay:d,ease:'power2.inOut'}));
+      track(gsap.to(cur,{x:'+='+dx,y:'+='+dy,duration:dur,delay:d,ease:'power2.inOut'}));
+    },
+    toast(text,d=0){c.at(d,()=>showToast(text,instant))}
+  };
+  return c;
+}
+
+/* ---------- content helpers ---------- */
+const chip=(name,ini,r)=>`<span class="chip"><span class="av xs"${r?` data-r="${r}"`:''}>${ini}</span>${name}</span>`;
+function tabTo(c,name){[...c.scene.querySelectorAll('.tab')].forEach(t=>t.classList.remove('on'));c.cls('t-'+name,'on');[...c.scene.querySelectorAll('.pane')].forEach(p=>p.classList.remove('on'));c.on('pane-'+name)}
+function snTo(c,name){[...c.scene.querySelectorAll('.snav > div')].forEach(t=>t.classList.remove('on'));c.cls('sn-'+name,'on');[...c.scene.querySelectorAll('.pane')].forEach(p=>p.classList.remove('on'));c.on('sp-'+name)}
+function fillDots(c,then){const dots=[...c.q('dots').children];dots.forEach((d,i)=>c.at(.12+i*.16,()=>d.classList.add('f')));c.at(1.15,()=>c.cls('dots','ok'));c.at(1.5,then)}
+const tokenX=i=>['10%','30%','50%','70%','90%'][i];
+
+/* ---------- chapters ---------- */
+const CH=[
+{title:'Set up your workspace',sum:'Sign up, name your studio and invite your first teammates.',scene:'start',tab:null,url:'orbit-os.co.za/signup',steps:[
+  {at:'name',t:'Create your account',d:'Sign up with your name and work email, then give the workspace your studio\'s name. The Free plan needs no card.',
+   run(c){const a=c.type('name','Thandi Mokoena',.1);c.at(a+.15,()=>c.move('email',.4));const b=c.type('email','thandi@northbound.co.za',a+.55);c.at(b+.15,()=>c.move('ws',.4));c.type('ws','Northbound Studio',b+.55)}},
+  {at:'create',t:'Become the Owner',d:'Creating the workspace makes you its Owner. That\'s the gold halo you\'ll see around your photo across the app.',
+   run(c){c.on('signup',false);c.at(.2,()=>c.on('invite'))}},
+  {at:'inv',t:'Invite your team',d:'Add teammates by email. Invites come from a verified OrbitOS address, and seats are checked again when someone accepts, so you never go over your plan.',
+   run(c){const seat=n=>{c.to('seatfill',{scaleX:n/3,duration:.6,ease:'expo.out'});c.text('seattxt',n+' of 3 seats used')};
+     let e=c.type('inv','sipho@northbound.co.za',.1);
+     c.at(e+.25,()=>{c.add('chips',chip('Sipho Dlamini','SD'));c.q('inv').querySelector('.typed').textContent='';seat(2)});
+     e=c.type('inv','anke@northbound.co.za',e+.7);
+     c.at(e+.25,()=>{c.add('chips',chip('Anke Visser','AV'));c.q('inv').querySelector('.typed').textContent='';seat(3)})}},
+  {at:'send',t:'Send the invites',d:'Your teammates join from the link in their email. On Free that\'s you plus two members. Adding a third is the moment to look at Standard.',
+   run(c){c.on('sent');c.toast('2 invites sent',.3)}}
+]},
+{title:'Read the dashboard',sum:'The attention view: what\'s overdue, what\'s at risk and who\'s overloaded.',scene:'dash',tab:'home',url:'orbit-os.co.za/dashboard',steps:[
+  {at:'moon',press:false,t:'Read the health moon',d:'The moon gives you one read on the whole workspace. The fuller it is, the healthier things are. It\'s worked out from overdue, blocked and finished work.',
+   run(c){c.on('moontip')}},
+  {at:'b-over',t:'Sort work by urgency',d:'Coming up splits everything into Overdue, Due today, Due tomorrow and Due this week. Pick a bucket to see what\'s in it.',
+   run(c){c.on('moontip',false);['b-today','b-tom','b-week'].forEach(k=>c.cls(k,'sel',false));c.cls('b-over','sel');
+     c.q('blist').innerHTML=`<div class="li"><span class="pill red plain">3d late</span><div class="grow"><div>Brand Identity v2</div><div class="sub">Northbound Rebrand</div></div></div><div class="li"><span class="pill red plain">1d late</span><div class="grow"><div>Homepage copy deck</div><div class="sub">Meridian Website</div></div></div>`;
+     c.from([...c.q('blist').children],{opacity:0,y:8,stagger:.07,duration:.4,ease:'expo.out'})}},
+  {at:'needs',press:false,t:'See what needs you',d:'Needs You gathers the approvals, replies and reviews waiting on you. Blocked work is flagged here too, so stuck tasks can\'t hide.',
+   run(c){c.qa('ni').forEach((el,i)=>c.at(i*.22,()=>el.classList.add('lit')))}},
+  {at:'r-mer',t:'Catch projects at risk',d:'Projects at Risk shows each project\'s health and the reasons behind it. Health is worked out the same way on every screen, so the dashboard and the project always agree.',
+   run(c){c.on('r-mer-x');c.cls('r-mer','lit')}},
+  {at:'nextup',press:false,t:'Know what\'s next',d:'Next up counts down to your next meeting or deadline, next to the shape of your week. Shaded days are weekends and public holidays.',
+   run(c){c.cls('nextup','glow')}},
+  {at:'w-thandi',press:false,t:'Spot who\'s carrying too much',d:'Team presence shows who\'s actually online and how loaded everyone is this week. The green dot comes from a live heartbeat, so it\'s never out of date.',
+   run(c){c.on('w-flag');c.cls('w-thandi','lit')}}
+]},
+{title:'Run a project',sum:'Directives, files, the live feed and announcements.',scene:'proj',tab:'folder',url:'orbit-os.co.za/projects',steps:[
+  {at:'p-mer',t:'Open a project',d:'Projects are listed by priority. From a project\'s menu you can rename, reprioritise, archive or restore it.',
+   run(c){c.cls('p-north','on',false);c.cls('p-mer','on');c.text('ptitle','Meridian Website');const h=c.q('phealth');h.className='pill red';h.textContent='At risk';
+     c.q('rows').innerHTML=`<tr><td>Homepage copy deck</td><td><span class="stack"><span class="av xs">AV</span></span></td><td><span class="pill red">Overdue</span></td><td>High</td><td class="mono">14 Dec</td></tr><tr><td>Client review pack</td><td><span class="stack"><span class="av xs" data-r="mgr">NK</span></span></td><td><span class="pill blue">In progress</span></td><td>High</td><td class="mono">15 Dec</td></tr><tr><td>Sitemap sign-off</td><td><span class="stack"><span class="av xs" data-r="lead">SD</span></span></td><td><span class="pill red">Blocked</span></td><td>Medium</td><td class="mono">18 Dec</td></tr>`;
+     c.from([...c.q('rows').children],{opacity:0,y:6,stagger:.06,duration:.35,ease:'expo.out'})}},
+  {at:'newd',t:'Add a directive',d:'Directives are OrbitOS tasks. Give one a title, as many assignees as you need, a priority and a due date.',
+   run(c){c.on('dscrim');c.on('dmodal');const a=c.type('dtitle','Homepage hero animation',.45);
+     c.at(a+.2,()=>c.add('dassign',chip('Anke Visser','AV')));c.at(a+.5,()=>c.add('dassign',chip('Sipho Dlamini','SD','lead')));
+     c.click(a+.7,'dhigh',()=>c.on('dhigh'));c.type('ddue','Fri 18 Dec',a+1.5)}},
+  {at:'dcreate',t:'Assign it',d:'Assignees are notified straight away, and get a reminder email 24 hours before it\'s due, at 09:00. You can also edit, forward or delete it later.',
+   run(c){c.on('dmodal',false);c.on('dscrim',false);
+     c.at(.25,()=>{const r=c.add('rows',`<tr class="flash"><td><b style="font-weight:600">Homepage hero animation</b></td><td><span class="stack"><span class="av xs">AV</span><span class="av xs" data-r="lead">SD</span></span></td><td><span class="pill plain">To do</span></td><td>High</td><td class="mono">18 Dec</td></tr>`,true)});
+     c.toast('Directive created. Anke and Sipho were notified',.4)}},
+  {at:'t-files',t:'Keep files with the work',d:'The Files tab holds everything for this project. Uploads are signed on OrbitOS\'s servers, so no storage keys ever sit in your browser.',
+   run(c){tabTo(c,'files');const u=c.add('files',`<div class="li uprow"><span class="ficon">${ico('up')}</span><div class="grow"><div>hero-storyboard.pdf</div><div class="meter"><i style="transform:scaleX(0)"></i></div></div></div>`,true);
+     c.to(u.querySelector('.meter i'),{scaleX:1,duration:1.4,delay:.3,ease:'power2.inOut'});
+     c.at(1.8,()=>{u.querySelector('.grow').innerHTML='<div>hero-storyboard.pdf</div><div class="sub">2.4 MB, you, just now</div>';u.querySelector('.ficon').innerHTML=ico('file')})}},
+  {at:'t-cc',t:'Watch it live',d:'Command Center is the project\'s live activity feed. Changes appear as they happen, and it stays smooth even if you leave it open all day.',
+   run(c){tabTo(c,'cc');const items=[['green','check','Sipho finished <b>Sitemap draft</b>','2 min ago'],['blue','folder','Anke uploaded <b>copy-deck-v3.docx</b>','14 min ago'],['amber','alert','<b>Homepage copy deck</b> is now overdue','1 hr ago'],['violet','users','Naledi joined the project','Yesterday']];
+     c.q('feed').innerHTML=items.map(([col,i,txt,t])=>`<div class="li ${col}"><span class="ic">${ico(i)}</span><div class="grow"><div style="font-weight:400">${txt}</div><div class="sub">${t}</div></div></div>`).join('');
+     c.from([...c.q('feed').children],{opacity:0,y:10,stagger:.08,duration:.45,ease:'expo.out'});
+     c.at(1.6,()=>c.add('feed',`<div class="li blue lit"><span class="ic">${ico('swap')}</span><div class="grow"><div style="font-weight:400">Anke moved <b>Homepage hero animation</b> to In progress</div><div class="sub">Just now</div></div></div>`,true))}},
+  {at:'brin',t:'Brief the whole project',d:'Briefing Room posts reach everyone on the project, and always show the real sender\'s name, so nobody wonders who changed the plan.',
+   run(c){const e=c.type('brin','Client moved the review to Thursday 10:00.',.1);
+     c.at(e+.3,()=>{c.q('brin').querySelector('.typed').textContent='';c.add('posts',`<div class="post lit"><div class="who"><span class="av xs" data-r="owner">TM</span><b>Thandi Mokoena</b><span class="ver-badge">${ico('check')}Verified</span><span class="lbl" style="margin-left:auto">Now</span></div>Client moved the review to Thursday 10:00.</div>`,true)})},
+   pre(c){tabTo(c,'br')}}
+]},
+{title:'Plan with the calendar',sum:'Meetings, outside guests, free slots and your calendar feed.',scene:'cal',tab:'cal',url:'orbit-os.co.za/calendar',steps:[
+  {at:'holhd',press:false,t:'Your whole week in one place',d:'Your calendar shows every meeting you\'re invited to and every task assigned to you, across all projects. Switch between day, week and month. South African public holidays are marked by name.',
+   run(c){c.on('htip')}},
+  {at:'newe',t:'Book an engagement',d:'Engagements are meetings. You can invite outside guests by email, even if they don\'t use OrbitOS. Standard allows 3 guests per invite, Pro allows 10.',
+   run(c){c.on('htip',false);c.on('escrim');c.on('emodal');const a=c.type('etitle','Meridian kickoff',.45);c.at(a+.1,()=>c.move('eguest',.4));const b=c.type('eguest','lerato@meridian.co.za',a+.55);
+     c.at(b+.25,()=>{c.q('eguest').querySelector('.typed').textContent='';c.add('echips',chip('lerato@meridian.co.za','LR'))})}},
+  {at:'esend',t:'Guests answer with one click',d:'Guests reply from a signed RSVP link and you\'re told the moment they answer. Amber means a reply is still pending, blue means they\'re coming, and late tasks show in red.',
+   run(c){c.on('emodal',false);c.on('escrim',false);c.fromTo('evnew',{opacity:0,scale:.9},{opacity:1,scale:1,duration:.5,delay:.25,ease:'expo.out'});
+     c.at(1.9,()=>{const e=c.q('evnew');e.classList.remove('amber');e.classList.add('blue');c.text('evnews','Lerato is going')});c.toast('Lerato accepted Meridian kickoff',1.9)}},
+  {at:'slotbtn',t:'Find time that works',d:'Find a slot checks everyone\'s busy and free time and shows the open spaces where the whole team is free.',
+   run(c){c.qa('slot').forEach((s,i)=>c.at(.1+i*.12,()=>s.classList.add('on')))}},
+  {at:'feedbtn',t:'Sync with your calendar app',d:'Subscribe to your private feed from Google, Outlook or Apple Calendar. If the link is ever shared by mistake, rotate it and the old one stops working.',
+   run(c){c.on('feedpop');c.click(.6,'fcopy',()=>c.text('fcopyt','Copied'))}}
+]},
+{title:'Make calls',sum:'Direct and group calls, transcripts and floating windows.',scene:'calls',tab:'phone',url:'orbit-os.co.za/call',steps:[
+  {at:'callbtn',t:'Call a teammate',d:'Direct calls ring on both ends, with push notifications on phones. You join with the camera off and mic on, and can turn the camera on when you\'re ready.',
+   run(c){c.on('room');c.at(2,()=>{c.on('ring',false);c.add('notices','<div class="notice">Sipho joined</div>')});
+     if(!c.instant){let s=0;const iv=setInterval(()=>{const el=c.q('clock');if(!el||!el.isConnected){clearInterval(iv);return}s++;el.textContent='00:'+String(s).padStart(2,'0')},1000);track({kill(){clearInterval(iv)}})}}},
+  {at:'addp',t:'Bring others in',d:'Add people in the middle of a call. On Pro, clients can join from an invite link without an account, and early arrivals wait in a lobby until a host joins.',
+   run(c){c.add('tiles','<div class="tile"><span class="av lg">AV</span><span class="nm">Anke<svg class="i"><use href="#i-mic"/></svg></span></div>');c.at(.3,()=>c.add('notices','<div class="notice">Anke joined</div>'))}},
+  {at:'tx',t:'Transcribe with consent',d:'A call is transcribed only if more than half the people in it agree. In a two-person call, both must say yes. The text is captured in each person\'s own browser.',
+   run(c){c.on('cscrim');c.on('consent');c.at(.9,()=>{const v=c.q('v2');v.textContent='Agreed';v.classList.add('yes')});
+     c.to('vfill',{scaleX:.667,duration:.5,delay:1,ease:'expo.out'});c.at(1.1,()=>c.text('vtxt','2 of 3 agreed. Majority reached'));
+     c.at(2.2,()=>{c.on('consent',false);c.on('cscrim',false);c.on('txbadge');c.cls('tx','act')})}},
+  {at:'min',t:'Minimise and keep working',d:'Shrink the call and carry on in the app. Drag the small window anywhere, or pop it out as picture-in-picture over your other apps.',
+   run(c){c.on('room',false);c.at(.2,()=>{c.on('mini');c.at(.45,()=>c.move(c.q('mini').querySelector('.mh'),.5))});c.drag('mini',-560,-280,1.25,1.1)}},
+  {at:'mleave',t:'File the transcript',d:'When the call ends, the transcript is ready. File it into the Vault so the next person can read what was agreed.',
+   run(c){c.on('mini',false);c.at(.25,()=>c.on('txready'));c.click(.9,'tovault',()=>{const b=c.q('tovault');b.className='btn done';b.innerHTML=ico('check')+'Filed in the Vault';showToast('Transcript filed in the Vault',c.instant)})}}
+]},
+{title:'Chat with your team',sum:'Direct messages, group chats and Town Hall.',scene:'msg',tab:'chat',url:'orbit-os.co.za/messages',steps:[
+  {at:'c-town',t:'Town Hall is for everyone',d:'Town Hall is the company-wide channel, with your studio\'s name and picture. Owners can pin important notices to the top.',
+   run(c){c.qa('c-anke').forEach(e=>e.classList.remove('on'));c.cls('c-anke','on',false);c.cls('c-town','on');
+     c.q('thead').innerHTML=`<span class="av md" style="background:linear-gradient(135deg,rgb(var(--amber)),rgb(var(--pink)));color:#111">NS</span><div><b>Town Hall</b><div class="lbl">Northbound Studio, 6 people</div></div>`;c.q('thead').style.setProperty('--c','var(--amber)');
+     const p=c.q('pin');p.style.display='';c.at(.05,()=>c.on('pin'));
+     c.q('msgs').innerHTML=`<div class="bub"><div class="from">Thandi Mokoena</div>Year-end shutdown: we close 18 Dec and reopen 5 Jan. Enjoy the break.</div><div class="bub"><div class="from">Kagiso Nkosi</div>Payroll runs on the 17th this month.</div>`;
+     c.from([...c.q('msgs').children],{opacity:0,y:8,stagger:.08,duration:.4,ease:'expo.out'})}},
+  {at:'c-sipho',t:'Direct messages and groups',d:'Unread counts show in the list, and a soft chime plays wherever you are in the app. The header takes on the other person\'s banner or department colour.',
+   run(c){c.cls('c-town','on',false);c.cls('c-sipho','on');const b=c.q('b-sipho');b&&b.remove();
+     c.q('thead').innerHTML=`<span class="av md" data-r="lead">SD</span><div><b>Sipho Dlamini</b><div class="lbl">Team Lead, Design. Online</div></div>`;c.q('thead').style.setProperty('--c','var(--pink)');
+     c.on('pin',false);c.q('pin').style.display='none';
+     c.q('msgs').innerHTML=`<div class="bub">Sent you the export settings for the hero.</div><div class="bub">Want me to take the animation too?</div>`;
+     c.from([...c.q('msgs').children],{opacity:0,y:8,stagger:.08,duration:.4,ease:'expo.out'})}},
+  {at:'comp',t:'Reference a task',d:'Mention a directive right in the message and it becomes a link to the task. Delivered and Read appear under your last message.',
+   run(c){const e=c.type('comp','Yes please, take ',.1);c.at(e+.15,()=>{const r=c.q('cref');r.style.display='';r.classList.add('on')});
+     c.click(e+.5,'sendm',()=>{c.q('comp').querySelector('.typed').textContent='';const r=c.q('cref');r.style.display='none';
+       c.add('msgs',`<div class="bub me">Yes please, take <span class="tref">${ico('folder')}Homepage hero animation</span></div>`);c.add('msgs','<div class="status" data-k="mst">Delivered</div>')});
+     c.at(e+2,()=>{const s=c.q('mst');if(s){s.textContent='Read';s.classList.add('read')}})}},
+  {at:'gifbtn',t:'Say it with a GIF',d:'Send images, GIFs, stickers and emoji. You can quietly edit what you sent, or clear a chat from your own list without deleting it for anyone else.',
+   run(c){c.on('gifs');c.click(.6,'gif1',()=>{c.on('gifs',false);c.add('msgs','<div class="gifmsg g1"></div>')})}}
+]},
+{title:'Map your people',sum:'Ranks, departments and the drag-and-drop org chart.',scene:'people',tab:'users',url:'orbit-os.co.za/teams',steps:[
+  {at:'n-thandi',press:false,t:'Ranks you can see',d:'Every person is a card wired to one boss. The halo colour shows their rank: gold for Owner, violet for Executive, blue for Manager, teal for Team Lead.',
+   run(c){c.on('legend')}},
+  {at:'n-lebo',press:false,t:'Wire someone in',d:'Drag a card under their new boss. Wiring someone under a department member files them into that department, so the roster, tickets and profiles all agree.',
+   run(c){c.on('legend',false);c.on('ghost');c.cls('n-lebo','lift');c.drag('n-lebo',480,-15,.25,1.2);
+     c.at(1.5,()=>{c.cls('n-lebo','lift',false);c.on('ghost',false);c.q('n-lebo').style.setProperty('--dca','1');c.text('lebork','Member, Design');c.text('traytxt','Everyone is wired')});
+     c.to('newwire',{strokeDashoffset:0,duration:.6,delay:1.5,ease:'power2.out'});c.toast('Lebo now reports to Sipho, in Design',1.7)}},
+  {at:'deptbtn',t:'Departments and colours',d:'On Pro you can create up to 10 departments, each with a lead and one of 22 colours. The colour follows the person into messages and profiles.',
+   run(c){c.on('deptp');c.from([...c.q('sw').children],{opacity:0,scale:.4,stagger:.02,duration:.3,delay:.2,ease:'expo.out'})}},
+  {at:'n-sipho',t:'Open a profile',d:'Profiles show a photo, banner, department colour, who someone reports to and who reports to them. The online dot is live.',
+   run(c){c.on('deptp',false);c.at(.15,()=>c.on('profile'))}}
+]},
+{title:'Use Admin Tools',sum:'Internal Management, ranks and the full ticket queue.',scene:'admin',tab:'shield',url:'orbit-os.co.za/admin',steps:[
+  {at:'dots',press:false,t:'Unlock Admin Tools',d:'Admin Tools has its own passcode, separate from your account password, so a signed-in laptop left open isn\'t enough to change the workspace. You can reset it by email.',
+   run(c){fillDots(c,()=>{c.on('gate',false);c.on('panel')})}},
+  {at:'im',press:false,t:'Meet Internal Management',d:'Internal Management is the small group who run the workspace itself. Any rank can hold a seat. Free and Standard include one seat, Pro two, and Custom three or more.',
+   run(c){c.on('imtip')}},
+  {at:'rk-sipho',t:'Set someone\'s rank',d:'From here Internal Management sets ranks, adds or removes owners, creates departments and wires the org chart.',
+   run(c){c.on('imtip',false);c.on('rkmenu');c.at(.5,()=>c.move('opt-mgr',.45));c.at(.95,()=>c.cls('opt-mgr','hov'));
+     c.click(1.05,'opt-mgr',()=>{c.on('rkmenu',false);const b=c.q('rk-sipho');b.className='rkbtn blue';c.text('rkt','Manager');c.q('sav').dataset.r='mgr'});
+     c.toast('Sipho is now a Manager',1.7)}},
+  {at:'an-q',t:'Work the full queue',d:'Internal Management sees every ticket at every step and can step in on any of them. Everyone else sees only what they raised and what passed through their hands.',
+   run(c){[...c.scene.querySelectorAll('.snav > div')].forEach(d=>d.classList.remove('on'));c.cls('an-q','on');c.q('ap-ranks').style.display='none';c.q('ap-q').style.display='';
+     const rows=[['amber','Issue','Client files missing from Meridian','With Manager, Naledi'],['violet','Access request','Vault access for Lebo','Waiting for you'],['teal','Onboarding','Lebo Mahlangu, starts 4 Jan','Applied'],['blue','Internal move','Anke to Team Lead','Waiting for you'],['red','Offboarding','Contractor: J. Pillay','Scheduled 31 Dec']];
+     c.q('qrows').innerHTML=rows.map(([col,t,s,w])=>`<div class="trow" style="grid-template-columns:110px minmax(0,1fr) 150px"><span class="pill ${col}">${t}</span><div>${s}</div><span class="lbl">${w}</span></div>`).join('');
+     c.from([...c.q('qrows').children],{opacity:0,y:8,stagger:.07,duration:.4,ease:'expo.out'})}}
+]},
+{title:'Raise a ticket',sum:'Issues that climb the org chart, and requests that go straight to the top.',scene:'tix',tab:'ticket',url:'orbit-os.co.za/tickets',steps:[
+  {at:'raise',t:'One desk for every request',d:'Tickets cover five kinds of request. Anyone can raise an Issue or an Access request. Onboarding, Internal moves and Offboarding are raised by Owners and Executives.',
+   run(c){c.on('tscrim');c.on('tmodal');c.click(.7,'ty-issue',()=>c.on('ty-issue'))}},
+  {at:'tsub',t:'Describe the problem',d:'An Issue goes to your Team Lead first. You\'ll see where it is at every moment.',
+   run(c){const e=c.type('tsub','Client files missing from Meridian',.1);
+     c.click(e+.25,'tsubmit',()=>{c.on('tmodal',false);c.on('tscrim',false);
+       c.add('tlist',`<div class="trow lit"><span class="pill amber">Issue</span><div>Client files missing from Meridian</div><span class="lbl" data-k="tstage">With Team Lead, Sipho</span><span class="btn" data-k="esc" style="height:26px">${ico('arrowup')}Escalate</span></div>`,true);
+       c.on('token');c.text('ladtxt','Issue: with Team Lead')})}},
+  {at:'esc',t:'Escalate one step at a time',d:'If the problem isn\'t solved, escalate it. An Issue climbs one level each time: Team Lead, Manager, Executive, the department\'s Owner, then Internal Management.',
+   run(c){const step=(i,name,who)=>{c.to('token',{left:tokenX(i),duration:.7,ease:'power3.inOut'});c.text('tstage','With '+name+', '+who);c.text('ladtxt','Issue: with '+name)};
+     step(1,'Manager','Naledi');c.at(.9,()=>c.move('esc',.3));c.at(1.3,()=>{if(!c.instant)ripple();step(2,'Executive','Kagiso')})}},
+  {at:'row-acc',t:'Other requests skip the climb',d:'Access requests, Onboarding, Internal moves and Offboarding go straight to Internal Management, who apply them. The history stays on the ticket.',
+   run(c){c.on('token',false);c.on('token2');c.text('ladtxt','Access request: straight to Internal Management');
+     c.fromTo('token2',{left:'10%'},{left:'90%',duration:1.1,delay:.2,ease:'power3.inOut'});
+     c.to('token2',{y:-26,duration:.55,delay:.2,ease:'power2.out'});c.to('token2',{y:0,duration:.55,delay:.75,ease:'power2.in'})}}
+]},
+{title:'Keep records in the Vault',sum:'Company documents behind a passcode, with two clearance levels.',scene:'vault',tab:'lock',url:'orbit-os.co.za/vault',steps:[
+  {at:'dots',press:false,t:'Open the Vault',d:'The Vault has its own passcode, and it locks again every time the page loads. Wrong attempts are limited on the server.',
+   run(c){fillDots(c,()=>{c.on('gate',false);c.on('shelf')})}},
+  {at:'cat-hr',t:'Filed by category',d:'Records are filed under Registration, Finance, Tax, HR, Legal, Insurance, Policies and Other, so registration papers and payroll stop living in inboxes.',
+   run(c){[...c.q('cats').children].forEach(x=>x.classList.remove('on'));c.cls('cat-hr','on');
+     [...c.q('docs').children].forEach(r=>r.classList.toggle('hide',r.dataset.c!=='hr'));c.from([...c.q('docs').querySelectorAll('.drow:not(.hide)')],{opacity:0,y:6,stagger:.07,duration:.35,ease:'expo.out'})}},
+  {at:'vup',t:'Choose who can see it',d:'Internal documents are visible to the whole workspace. Restricted ones are visible only to owners and the person who uploaded them, and never reach anyone else\'s browser.',
+   run(c){[...c.q('cats').children].forEach(x=>x.classList.toggle('on',x.dataset.c==='all'));[...c.q('docs').children].forEach(r=>r.classList.remove('hide'));
+     c.on('vscrim');c.on('vmodal');
+     c.click(.7,'clr-r',()=>{c.cls('clr-i','on',false);c.on('clr-r');c.text('clrnote','Only owners and you will be able to see this document.')});
+     c.click(1.6,'vupload',()=>{c.on('vmodal',false);c.on('vscrim',false);
+       c.add('docs',`<div class="drow lit"><span class="ficon">${ico('file')}</span><div>Payroll, Nov 2026.pdf</div><span class="lbl">Finance</span><span class="pill red">${ico('lock')}Restricted</span><span class="ficon" style="background:none">${ico('more')}</span></div>`,true);
+       showToast('Uploaded as Restricted',c.instant)})}},
+  {at:'dots-cipc',t:'Download, re-file or delete',d:'Every action checks your clearance on the server, not just on screen. Call transcripts you file from a call land here too.',
+   run(c){c.on('vmenu')}}
+]},
+{title:'Plans and billing',sum:'See your limits and ask for an upgrade.',scene:'bill',tab:'gear',url:'orbit-os.co.za/settings/billing',steps:[
+  {at:'m-mem',press:false,t:'See what you\'re using',d:'Billing shows how much of each limit you\'re using. A full bar turns amber. Limits never remove anything you already have; they only stop you adding more.',
+   run(c){c.fromTo(c.qa('mf'),{scaleX:0},{scaleX:(i,el)=>[1,1,.4,.38][i],duration:.9,stagger:.1,ease:'expo.out'})}},
+  {at:'minv',t:'Hit a limit, see why',d:'When a limit stops you, the message says exactly which limit you reached, so you know whether to tidy up or upgrade.',
+   run(c){c.on('limitmsg')}},
+  {at:'pl-pro',press:false,t:'Pick the right plan',d:'Standard suits a small team. Pro is for studios working with clients: guests on calls, more transcripts, departments and a bigger Vault. Custom is for 16 or more people.',
+   run(c){c.on('limitmsg',false);c.cls('plans','focus');c.cls('pl-pro','lit2')}},
+  {at:'requp',t:'Request an upgrade',d:'While self-serve checkout is paused, Request upgrade emails the OrbitOS team. They move your workspace to the new plan and invoice you directly.',
+   run(c){c.cls('requp','done');c.text('requpt','Request sent');c.toast('Upgrade request sent. We\'ll be in touch to invoice you',.2)}}
+]},
+{title:'Make it yours',sum:'Notifications, theme, calendar feed and security.',scene:'set',tab:'gear',url:'orbit-os.co.za/settings',steps:[
+  {at:'sn-not',t:'Choose your notifications',d:'Turn the message chime and ringtone on or off, and choose desktop and phone notifications for calls and messages.',
+   run(c){snTo(c,'not');c.click(.5,'tg-chime',()=>c.cls('tg-chime','offs'))}},
+  {at:'sn-gen',t:'Light, dark or system',d:'Pick a theme and it applies before the page even draws, so there\'s no flash. Times always use the 24-hour clock.',
+   run(c){snTo(c,'gen');const target=isLight()?'th-dark':'th-light';c.click(.5,target,()=>{['th-light','th-dark','th-sys'].forEach(k=>c.on(k,false));c.on(target);win.dataset.wtheme=isLight()?'dark':'light'})}},
+  {at:'sn-feed',t:'Rotate your calendar link',d:'If your private feed link is ever shared, rotate it. The old link stops working straight away.',
+   run(c){snTo(c,'feed');c.click(.5,'rot',()=>{c.text('flink','webcal://orbit-os.co.za/feed/u/e94b1a07c6f2d8');c.on('rotnote')})}},
+  {at:'sn-sec',t:'Sign out everywhere',d:'Lost a phone? Sign out everywhere ends every session on every device at once. You\'ll just sign in again here.',
+   run(c){snTo(c,'sec');c.click(.5,'soe',()=>{c.qa('ss').forEach((s,i)=>c.at(i*.15,()=>s.classList.add('gone')))});c.toast('Signed out of every session',.9)}}
+]}
+];
+
+/* ---------- rail + caption UI ---------- */
+const rail=$('#rail'), dots=$('#dots');
+const visited=new Set();
+rail.innerHTML=CH.map((ch,i)=>`<button class="ch" data-i="${i}"><span class="n">${String(i+1).padStart(2,'0')}</span><span><b>${ch.title}</b><small>${ch.sum}</small></span></button>`).join('');
+rail.addEventListener('click',e=>{const b=e.target.closest('.ch');if(!b)return;start();go(+b.dataset.i,0)});
+dots.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;start();go(ci,+b.dataset.s)});
+
+function updateUI(){
+  const ch=CH[ci], st=ch.steps[si];
+  $$('.ch',rail).forEach((b,i)=>{b.classList.toggle('on',i===ci);b.classList.toggle('done',visited.has(i)&&i!==ci)});
+  const on=$('.ch.on',rail);
+  if(on&&started&&matchMedia('(max-width:980px)').matches){rail.scrollTo({left:on.offsetLeft-12,behavior:RM?'auto':'smooth'})}
+  $('#capCh').textContent=`Chapter ${ci+1} of ${CH.length}: ${ch.title}`;
+  $('#capN').textContent=`Step ${si+1} of ${ch.steps.length}`;
+  $('#capT').textContent=st.t;$('#capD').textContent=st.d;
+  if(!RM&&started)gsap.fromTo(['#capT','#capD'],{opacity:0,y:6},{opacity:1,y:0,duration:.45,stagger:.05,ease:'expo.out'});
+  dots.innerHTML=ch.steps.map((s,i)=>`<button data-s="${i}" class="${i<si?'past':i===si?'cur':''}" aria-label="Step ${i+1}: ${s.t.replace(/"/g,'&quot;')}"><i></i></button>`).join('');
+  $$('.atab',win).forEach(t=>t.classList.toggle('on',t.dataset.tab===ch.tab));
+  $('#url').textContent=ch.url;
+  $('#prev').disabled=ci===0&&si===0;
+}
+function setPlayIcon(){$('#play use').setAttribute('href',playing?'#i-pause':'#i-play');$('#play').setAttribute('aria-label',playing?'Pause':'Play')}
+
+async function go(c,s,animate=true){
+  const id=++runId;killAll();
+  ci=c;si=s;visited.add(c);
+  const ch=CH[c];
+  Object.values(scenes).forEach(x=>x.classList.remove('active'));
+  const sc=scenes[ch.scene];sc.innerHTML=orig[ch.scene];sc.classList.add('active');
+  delete win.dataset.wtheme;toastEl.classList.remove('on');
+  stage.classList.add('instant');
+  for(let j=0;j<s;j++){const cx=makeCtx(sc,true);ch.steps[j].run(cx)}
+  const st=ch.steps[s];
+  if(st.pre)st.pre(makeCtx(sc,true));
+  updateUI();
+  await frame();await frame();
+  if(id!==runId)return;
+  stage.classList.remove('instant');
+  const anim=animate&&!RM;
+  const target=st.at&&sc.querySelector(`[data-k="${st.at}"]`);
+  if(target){
+    if(anim){await new Promise(r=>{track(cursorTween(target,.8).then(r))});if(id!==runId)return;
+      if(st.press!==false){ripple();await wait(160)}else await wait(80);
+      if(id!==runId)return}
+    else placeCursor(target);
+  }
+  const cx=makeCtx(sc,!anim);st.run(cx);
+  if(playing)schedule(Math.max(cx.t,0)*1000+(st.hold||3400));
+}
+function schedule(ms){
+  clearTimeout(holdTimer);
+  const bar=$('#dots button.cur i');
+  if(bar&&!RM){progT=gsap.fromTo(bar,{scaleX:0},{scaleX:1,duration:ms/1000,ease:'none'})}
+  holdTimer=setTimeout(next,ms);
+}
+function next(){const ch=CH[ci];if(si<ch.steps.length-1)go(ci,si+1);else if(ci<CH.length-1)go(ci+1,0);else{playing=false;setPlayIcon();visited.add(ci);updateUI()}}
+function prev(){if(si>0)go(ci,si-1);else if(ci>0)go(ci-1,CH[ci-1].steps.length-1)}
+function start(){if(!started){started=true}}
+
+$('#next').addEventListener('click',()=>{start();next()});
+$('#prev').addEventListener('click',()=>{start();prev()});
+$('#play').addEventListener('click',()=>{start();playing=!playing;setPlayIcon();if(playing){if(ci===CH.length-1&&si===CH[ci].steps.length-1)go(0,0);else go(ci,si)}else{clearTimeout(holdTimer);progT&&progT.kill&&progT.kill()}});
+document.addEventListener('keydown',e=>{
+  if(e.target.closest('input,textarea'))return;
+  const r=$('#tour').getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;
+  if(e.key==='ArrowRight'){e.preventDefault();start();next()}
+  else if(e.key==='ArrowLeft'){e.preventDefault();start();prev()}
+  else if(e.key===' '&&!e.target.closest('button,a')){e.preventDefault();$('#play').click()}
+});
+$('#startTour').addEventListener('click',()=>{start();if(!playing){playing=!RM;setPlayIcon()}go(0,0)});
+
+// first paint: show chapter 1, start playing when the player scrolls into view
+playing=false;setPlayIcon();gsap.set(cur,{x:520,y:420});go(0,0,false);
+new IntersectionObserver((ents,obs)=>{ents.forEach(en=>{if(en.isIntersecting){obs.disconnect();if(!started){started=true;playing=!RM;setPlayIcon();go(ci,si)}}})},{threshold:.45}).observe(box);
+
+// live countdown on the dashboard card
+let cdS=35*60+12;setInterval(()=>{cdS=cdS>0?cdS-1:35*60;const el=$('[data-scene=dash] [data-cd]');if(el){const h=Math.floor(cdS/3600),m=Math.floor(cdS%3600/60),s=cdS%60;el.textContent=[h,m,s].map(v=>String(v).padStart(2,'0')).join(':')}},1000);
+
+/* ---------- hero satellite ---------- */
+(function(){
+  const sat=$('#sat'), ring=$('.orbitring');if(RM||!sat)return;
+  let visible=true;new IntersectionObserver(e=>{visible=e[0].isIntersecting}).observe(ring);
+  let t0=performance.now();
+  function tick(now){
+    if(visible){const w=ring.clientWidth,h=ring.clientHeight,a=((now-t0)/1000)*0.28+1.2;
+      const x=w/2+Math.cos(a)*(w/2-2), y=h/2+Math.sin(a)*(h/2-2), front=Math.sin(a)>0;
+      sat.style.transform=`translate(${x}px,${y}px) scale(${front?1:.7})`;sat.style.opacity=front?1:.45}
+    requestAnimationFrame(tick)}
+  requestAnimationFrame(tick);
+})();
+})();
+</script>
+</body>
+</html>
